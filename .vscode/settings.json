@@ -1,0 +1,16 @@
+{
+  "python.pythonPath": "/Users/andrewnwachuku/Desktop/code/*PORTFOLIO/djangoPy3Env/bin/python3",
+  "editor.formatOnSave": false,
+  "python.linting.pycodestyleEnabled": true,
+  "python.linting.pylintPath": "pylint",
+  "python.linting.pylintArgs": ["--load-plugins", "pylint_django"],
+  "python.linting.pylintEnabled": true,
+  "python.venvPath": "/Users/andrewnwachuku/Desktop/code/*PORTFOLIO/djangoPy3Env/bin/python3",
+  "python.linting.pycodestyleArgs": ["--ignore=E501"],
+  "files.exclude": {
+    "**/*.pyc": true
+  },
+  "eslint.alwaysShowStatus": true,
+  "eslint.autoFixOnSave": true,
+  "editor.tabSize": 3
+}

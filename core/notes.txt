@@ -1,0 +1,16 @@
+Consider allowing users to save multiple cards and choose a default
+    - Payment model: saved_cards 
+    - Stripe: already allows to create multiple sources
+    - Form and HTML
+
+Saved new default address, figure out how to get last value
+    - CheckoutView
+    - Then figure out how to delete previous defaults when you make a new one
+
+NAVBAR
+    - Remove badge
+        - !user.is_authenticated
+        - Cart is empty
+
+ACCOUNT_EMAIL_VERIFICATION (settings.py:30)
+    - Figure out a way for apps to bypass verification upon signing up
