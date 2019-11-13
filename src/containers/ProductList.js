@@ -3,6 +3,16 @@ import axios from 'axios'
 import { Button, Container, Dimmer, Icon, Image, Item, Label, Loader, Message, Segment } from 'semantic-ui-react'
 import { productListURL } from '../constants'
 
+const sizes = [
+	'mini',
+	'tiny',
+	'small',
+	'medium',
+	'large',
+	'big',
+	'huge',
+	'massive',
+ ]
 
 class ProductList extends React.Component {
 	state = {
@@ -50,34 +60,48 @@ class ProductList extends React.Component {
 					{data.map(item => {
 						return <Item key={item.id}>
 							<Item.Image src={item.image} />
+							
 							<Item.Content>
 								<Item.Header as='a'>{item.name}</Item.Header>
 								<Item.Meta>
-								<span className='cinema'>{item.category}</span>
+									<span className='cinema'>{item.category}</span>
 								</Item.Meta>
 								<Item.Description>{item.description}</Item.Description>
 								<Item.Extra>
-								<Button primary floated='right' icon labelPosition='right'>
-									Add to Cart
-									<Icon name='add to cart' />
-								</Button>
-								{item.discount_price && (
-									<Label 
-										color={ // if the item's label is primary, blue. Elif label secondary, green. Else, olive.
-											item.label === 'primary' 
-												? 'blue' 
-												: item.label === 'secondary' 
-												? 'green' 
-												: 'olive' 
-										}
-									>
-										{item.discount_price}
-									</Label>
-								)} 
+									<Button primary floated='right' icon labelPosition='right'>
+										Add to Cart
+										<Icon name='add to cart' />
+									</Button>
+									{item.discount_price && (
+										<Label as='a' tag 
+											color={ // if the item's label is primary, blue. Elif label secondary, green. Else, olive.
+												item.label === 'primary' 
+													? 'blue' 
+													: item.label === 'secondary' 
+													? 'green' 
+													: 'olive' 
+											}
+										>
+											${item.discount_price}
+											
+										</Label>
+									)}
+									{!item.discount_price && (
+										<Label as='a' tag
+											color={ // if the item's label is primary, blue. Elif label secondary, green. Else, olive.
+												item.label === 'primary' 
+													? 'blue' 
+													: item.label === 'secondary' 
+													? 'green' 
+													: 'olive' 
+											}
+										>
+											${item.price}
+										</Label>
+									)}
 								</Item.Extra>
 							</Item.Content>
 						</Item>
-
 					})}
 						
 				</Item.Group>
