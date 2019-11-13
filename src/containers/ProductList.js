@@ -1,8 +1,8 @@
 import React from 'react'
 import axios from 'axios'
 import { Button, Container, Dimmer, Icon, Image, Item, Label, Loader, Message, Segment } from 'semantic-ui-react'
-import { productListURL } from '../constants'
-
+import { productListURL, addToCartURL } from '../URLconstants'
+import { authAxios } from '../utils'
 const sizes = [
 	'mini',
 	'tiny',
@@ -21,18 +21,34 @@ class ProductList extends React.Component {
 		data: []
 	};
 
+	// componentDidMount() gets retrieves data to be loaded on this page
 	componentDidMount() {
 		this.setState({ loading: true })
 		// Use normal Axios request because user doesn't need to be authenticated to view Product List
 		axios
 		.get(productListURL)
 		.then(res => {
-			this.setState({ data: res.data, loading: false});
 			console.log(res.data)
+			this.setState({ data: res.data, loading: false});
 		})
 		.catch(err => {
 			this.setState({ error: err, loading: false });
 		});
+	}
+
+	handleAddToCart = slug => {
+		this.setState({ loading: true })
+		// Need to include auth token to make post requests from the API (utils.js)
+		authAxios
+		.post(addToCartURL, {slug})
+			.then(res => {
+				console.log(res.data)
+				// Update cart count
+				this.setState({ loading: false});
+			})
+			.catch(err => {
+				this.setState({ error: err, loading: false });
+			});
 	}
 
 	render() {
@@ -58,52 +74,52 @@ class ProductList extends React.Component {
 
 				<Item.Group divided>
 					{data.map(item => {
-						return <Item key={item.id}>
-							<Item.Image src={item.image} />
-							
-							<Item.Content>
-								<Item.Header as='a'>{item.name}</Item.Header>
-								<Item.Meta>
-									<span className='cinema'>{item.category}</span>
-								</Item.Meta>
-								<Item.Description>{item.description}</Item.Description>
-								<Item.Extra>
-									<Button primary floated='right' icon labelPosition='right'>
-										Add to Cart
-										<Icon name='add to cart' />
-									</Button>
-									{item.discount_price && (
-										<Label as='a' tag 
-											color={ // if the item's label is primary, blue. Elif label secondary, green. Else, olive.
-												item.label === 'primary' 
-													? 'blue' 
-													: item.label === 'secondary' 
-													? 'green' 
-													: 'olive' 
-											}
-										>
-											${item.discount_price}
-											
-										</Label>
-									)}
-									{!item.discount_price && (
-										<Label as='a' tag
-											color={ // if the item's label is primary, blue. Elif label secondary, green. Else, olive.
-												item.label === 'primary' 
-													? 'blue' 
-													: item.label === 'secondary' 
-													? 'green' 
-													: 'olive' 
-											}
-										>
-											${item.price}
-										</Label>
-									)}
-								</Item.Extra>
-							</Item.Content>
-						</Item>
-					})}
-						
+						return (
+							<Item key={item.id}>
+								<Item.Image src={item.image} />
+								<Item.Content>
+									<Item.Header as='a'>{item.name}</Item.Header>
+									<Item.Meta>
+										<span className='cinema'>{item.category}</span>
+									</Item.Meta>
+									<Item.Description>{item.description}</Item.Description>
+									<Item.Extra>
+										<Button primary floated='right' icon labelPosition='right' onClick={() => this.handleAddToCart(item.slug)}>
+											Add to Cart
+											<Icon name='add to cart' />
+										</Button>
+										{item.discount_price && (
+											<Label as='a' tag 
+												color={ // if the item's label is primary, blue. Elif label secondary, green. Else, olive.
+													item.label === 'primary' 
+														? 'blue' 
+														: item.label === 'secondary' 
+														? 'green' 
+														: 'olive' 
+												}
+											>
+												${item.discount_price}
+												
+											</Label>
+										)}
+										{!item.discount_price && (
+											<Label as='a' tag
+												color={ // if the item's label is primary, blue. Elif label secondary, green. Else, olive.
+													item.label === 'primary' 
+														? 'blue' 
+														: item.label === 'secondary' 
+														? 'green' 
+														: 'olive' 
+												}
+											>
+												${item.price}
+											</Label>
+										)}
+									</Item.Extra>
+								</Item.Content>
+							</Item>
+						);
+					})}	
 				</Item.Group>
 			</Container>
 		);

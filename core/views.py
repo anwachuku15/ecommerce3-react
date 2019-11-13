@@ -1,5 +1,6 @@
 from .models import *
 from .forms import *
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
@@ -7,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, View
 from django.utils import timezone
-from django.conf import settings
+
 
 import random
 import string
@@ -482,11 +483,6 @@ def add_in_cart(request, slug):
         messages.info(request, 'This item was added to your cart')
         return redirect("core:order-summary")
 
-# TODO: Consider deleting active orders with 0 items
-#       cart = Order.objects.filter(user=request.user, ordered=False)
-#       if cart.exists() and cart[0].items < 1 (???)...
-#       if empty --> order_summary.html:45
-
 
 @login_required
 def remove_from_cart(request, slug):
@@ -577,7 +573,6 @@ def get_coupon(request, code):
         messages.warning(request, "This coupon does not exist")
         return redirect('core:checkout')
 
-# TODO: Remove coupon
 
 
 class AddCouponView(View):
