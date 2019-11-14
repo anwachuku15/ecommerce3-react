@@ -1,18 +1,10 @@
 import React from 'react'
+import { connect } from "react-redux";
 import axios from 'axios'
 import { Button, Container, Dimmer, Icon, Image, Item, Label, Loader, Message, Segment } from 'semantic-ui-react'
 import { productListURL, addToCartURL } from '../URLconstants'
 import { authAxios } from '../utils'
-const sizes = [
-	'mini',
-	'tiny',
-	'small',
-	'medium',
-	'large',
-	'big',
-	'huge',
-	'massive',
- ]
+import { fetchCart } from "../store/actions/cart"
 
 class ProductList extends React.Component {
 	state = {
@@ -37,13 +29,13 @@ class ProductList extends React.Component {
 	}
 
 	handleAddToCart = slug => {
-		this.setState({ loading: true })
+		this.setState({ loading: false })
 		// Need to include auth token to make post requests from the API (utils.js)
 		authAxios
 		.post(addToCartURL, {slug})
 			.then(res => {
 				console.log(res.data)
-				// Update cart count
+				this.props.refreshCart();
 				this.setState({ loading: false});
 			})
 			.catch(err => {
@@ -126,4 +118,14 @@ class ProductList extends React.Component {
 	}
 }
 
-export default ProductList
+const mapDispatchToProps = dispatch => {
+	return {
+	  refreshCart: () => dispatch(fetchCart())
+	};
+ };
+ 
+ export default connect(
+	null,
+	mapDispatchToProps
+ )(ProductList);
+ 

@@ -468,8 +468,7 @@ def add_in_cart(request, slug):
         if order.items.filter(item__slug=item.slug).exists():
             order_item.quantity += 1
             order_item.save()
-            messages.info(request, 'You added one "' +
-                          order_item.item.name + '" to your cart')
+            messages.info(request, 'You added one "' + order_item.item.name + '" to your cart')
             return redirect("core:order-summary")
         else:
             messages.info(request, 'This item was added to your cart')
@@ -519,8 +518,7 @@ def remove_single_item(request, slug):
             if order_item.quantity > 1:
                 order_item.quantity -= 1
                 order_item.save()
-                messages.info(request, 'You removed one "' +
-                              order_item.item.name + '" from your cart')
+                messages.info(request, 'You removed one "' + order_item.item.name + '" from your cart')
             else:
                 order_item.delete()
             # order.items.remove(order_item)
@@ -546,8 +544,7 @@ def remove_items(request, slug):
                 user=request.user, item=item, ordered=False)
             order_item.delete()
             # order.items.remove(order_item)
-            messages.info(request, 'You removed "' +
-                          order_item.item.name + '" from your cart')
+            messages.info(request, 'You removed "' + order_item.item.name + '" from your cart')
             return redirect('core:order-summary')
         else:
             messages.info(request, 'This item isn\'t in your cart')
@@ -572,7 +569,6 @@ def get_coupon(request, code):
     except ObjectDoesNotExist:
         messages.warning(request, "This coupon does not exist")
         return redirect('core:checkout')
-
 
 
 class AddCouponView(View):

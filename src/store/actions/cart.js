@@ -1,7 +1,6 @@
-import axios from "axios";
 import * as actionTypes from "./actionTypes";
 import { authAxios } from "../../utils";
-import {fetchCart} from "../../URLconstants"
+import {orderSummaryURL} from "../../URLconstants"
 
 export const cartStart = () => {
    return {
@@ -13,7 +12,7 @@ export const cartSuccess = data => {
    console.log(data)
    return {
       type: actionTypes.CART_SUCCESS,
-      token: token
+      data
    };
 };
 
@@ -24,16 +23,16 @@ export const cartFail = error => {
    };
 };
 
-export const cartFetch = () => {
+export const fetchCart = () => {
    return dispatch => {
      dispatch(cartStart());
      authAxios
-      .post(fetchCart)
+      .get(orderSummaryURL)
       .then(res => {
          dispatch(cartSuccess(res.data));
       })
       .catch(err => {
          dispatch(cartFail(err));
       });
-   );
+   };
 };

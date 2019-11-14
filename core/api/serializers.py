@@ -8,8 +8,14 @@ from core.models import *
 #         fields = ('user', 'stripe_customer_id',
 #                   'one_click_purchasing')
 
+class StringSerializer(serializers.StringRelatedField):
+    def to_internal_value(self, value):
+        return value
+
 
 class ItemSerializer(serializers.ModelSerializer):
+    # SerializerMethodField because category & label are choices...
+    # ... so we want the value and display name for the get_category & get_label methods
     category = serializers.SerializerMethodField()
     label = serializers.SerializerMethodField()
 
@@ -24,17 +30,26 @@ class ItemSerializer(serializers.ModelSerializer):
     def get_label(self, obj):
         return obj.get_label_display()
 
-# class OrderItemSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = OrderItem
-#         fields = ('user', 'item', 'quantity', 'ordered')
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    # item must reference ItemSerializer
+    item = StringSerializer()
+
+    class Meta:
+        model = OrderItem
+        fields = ('id', 'item', 'quantity')
 
 
-# class OrderSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Order
-#         fields = ('user', 'ref_code', 'items', 'start_date', 'ordered_date', 'ordered', 'billing_address',
-#                   'shipping_address', 'payment', 'coupon', 'being_delivered', 'received', 'refund_requested', 'refund_granted')
+class OrderSerializer(serializers.ModelSerializer):
+    # Ultimately we want to display all order items and the number of items
+    order_items = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = ('id', 'order_items')
+
+    def get_order_items(self, obj):
+        return OrderItemSerializer(obj.items.all(), many=True).data
 
 
 # class AddressSerializer(serializers.ModelSerializer):

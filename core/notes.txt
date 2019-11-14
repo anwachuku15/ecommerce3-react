@@ -1,3 +1,21 @@
+TODO: Review auth.js
+
+API workflow
+1. core.models --> core.api.serializers
+2. core.views --> core.api.views --> core.api.urls  --> URLconstants.js
+    Depending on specifics of app:
+    2a. store.actions.{file}.js --> store.reducers.{file}.js --> Layout.js
+3. Components.js --> routes.js
+
+    - convert core.models into core.api.serializers
+    - import necessary modules from core.views into core.api.views
+    - Copy core.views functions into core.api.views
+    - Reconfigure functions in core.api.views to their API equivalents
+    - Add core.api.views functions to core.api.urls
+    - add names of core.api.urls to URLconstants.js
+    - import URLconstants into appropriate Component.js pages
+    - add path/exact-path for each Component in routes.js
+
 Consider allowing users to save multiple cards and choose a default
     - Payment model: saved_cards 
     - Stripe: already allows to create multiple sources
