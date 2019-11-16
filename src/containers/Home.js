@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import {
   Button,
   Container,
@@ -15,6 +16,9 @@ import {
   Sidebar,
   Visibility
 } from "semantic-ui-react";
+import { authAxios } from "../utils"
+import { orderSummaryURL } from '../URLconstants'
+import { fetchCart } from "../store/actions/cart"
 
 const getWidth = () => {
   const isSSR = typeof window === "undefined";
@@ -22,14 +26,37 @@ const getWidth = () => {
 };
 
 class DesktopContainer extends Component {
-  state = {};
+  // state = {};
+  state = {
+    data: [],
+    error: null,
+    loading: false
+  }
+
+  componentDidMount() {
+    console.log(this.props);
+  }
+  
+//   handleFetchCart = () => {
+//     this.setState({loading: true});
+//     authAxios
+// 		.get(orderSummaryURL)
+// 		.then(res => {
+// 			console.log(res.data);
+// 			this.props.refreshCart();
+// 			this.setState({ data: res.data, loading: false});
+// 		})
+// 		.catch(err => {
+// 			this.setState({ error: err, loading: false });
+// 		});
+//  }
 
   hideFixedMenu = () => this.setState({ fixed: false });
   showFixedMenu = () => this.setState({ fixed: true });
 
   render() {
     const { children } = this.props;
-    // const { fixed } = this.state;
+    // console.log(this.props);
 
     return (
       <Responsive getWidth={getWidth} minWidth={Responsive.onlyTablet.minWidth}>
@@ -49,7 +76,30 @@ DesktopContainer.propTypes = {
 };
 
 class MobileContainer extends Component {
-  state = {};
+  // state = {};
+  state = {
+    data: [],
+    error: null,
+    loading: false
+  }
+
+  // componentDidMount() {
+  //   this.handleFetchCart();
+  // }
+  
+//   handleFetchCart = () => {
+//     this.setState({loading: true});
+//     authAxios
+// 		.get(orderSummaryURL)
+// 		.then(res => {
+// 			console.log(res.data);
+// 			this.props.refreshCart();
+// 			this.setState({ data: res.data, loading: false});
+// 		})
+// 		.catch(err => {
+// 			this.setState({ error: err, loading: false });
+// 		});
+//  }
 
   handleSidebarHide = () => this.setState({ sidebarOpened: false });
 
@@ -184,4 +234,16 @@ const HomepageLayout = () => (
     </Segment>
   </ResponsiveContainer>
 );
-export default HomepageLayout;
+
+
+const mapDispatchToProps = dispatch => {
+	return {
+	  refreshCart: () => dispatch(fetchCart())
+	};
+ };
+
+ export default connect(
+	// null instead of mapStateToProps
+	null,
+	mapDispatchToProps
+ )(HomepageLayout);

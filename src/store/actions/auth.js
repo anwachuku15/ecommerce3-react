@@ -103,3 +103,12 @@ export const authCheckState = () => {
     }
   };
 };
+
+export const getAuth = () => {
+  return dispatch => {
+    dispatch(authStart());
+    const token = localStorage.getItem("token");
+    console.log(token);
+    dispatch(authSuccess(token));
+  }
+}

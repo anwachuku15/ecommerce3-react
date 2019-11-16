@@ -6,3 +6,5 @@ node_modules
 build
 static
 package-lock.json
+notes.txt
+.appfairy

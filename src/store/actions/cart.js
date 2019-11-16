@@ -23,6 +23,7 @@ export const cartFail = error => {
    };
 };
 
+// This is an authenticated request for the user's order summary
 export const fetchCart = () => {
    return dispatch => {
      dispatch(cartStart());

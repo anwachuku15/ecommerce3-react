@@ -1,31 +1,40 @@
 import React from 'react'
+
+// React-Redux connects actions to the component
 import { connect } from "react-redux";
+
 import axios from 'axios'
 import { Button, Container, Dimmer, Icon, Image, Item, Label, Loader, Message, Segment } from 'semantic-ui-react'
 import { productListURL, addToCartURL } from '../URLconstants'
 import { authAxios } from '../utils'
 import { fetchCart } from "../store/actions/cart"
+import { orderSummaryURL } from '../URLconstants'
 
 class ProductList extends React.Component {
 	state = {
 		loading: false,
 		error: null,
-		data: []
+		data: [],
+		order: []
 	};
 
 	// componentDidMount() gets retrieves data to be loaded on this page
 	componentDidMount() {
+		console.log(this.props);
+
 		this.setState({ loading: true })
 		// Use normal Axios request because user doesn't need to be authenticated to view Product List
 		axios
 		.get(productListURL)
 		.then(res => {
-			console.log(res.data)
+			console.log(res.data);
+			this.props.refreshCart();
 			this.setState({ data: res.data, loading: false});
 		})
 		.catch(err => {
 			this.setState({ error: err, loading: false });
 		});
+		
 	}
 
 	handleAddToCart = slug => {
@@ -34,7 +43,6 @@ class ProductList extends React.Component {
 		authAxios
 		.post(addToCartURL, {slug})
 			.then(res => {
-				console.log(res.data)
 				this.props.refreshCart();
 				this.setState({ loading: false});
 			})
@@ -45,6 +53,7 @@ class ProductList extends React.Component {
 
 	render() {
 		const { data, error, loading } = this.state;
+		// console.log();
 		return (
 			<Container>
 				{error && ( // if an error exists
@@ -118,6 +127,7 @@ class ProductList extends React.Component {
 	}
 }
 
+// includes dispatch action in Props
 const mapDispatchToProps = dispatch => {
 	return {
 	  refreshCart: () => dispatch(fetchCart())
@@ -125,6 +135,7 @@ const mapDispatchToProps = dispatch => {
  };
  
  export default connect(
+	// null instead of mapStateToProps
 	null,
 	mapDispatchToProps
  )(ProductList);

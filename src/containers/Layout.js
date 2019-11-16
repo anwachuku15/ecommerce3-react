@@ -11,21 +11,25 @@ import {
   Segment,
   Icon
 } from "semantic-ui-react";
+import axios from 'axios';
 import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { logout } from "../store/actions/auth";
-import { fetchCart } from "../store/actions/cart"
-import equal from 'fast-deep-equal'
+import { fetchCart } from "../store/actions/cart";
 
 class CustomLayout extends React.Component {
 
+  componentDidMount() {
+    this.props.refreshCart();
+  }
+  
   render() {
     const { authenticated, cart, loading } = this.props;
+    console.log(cart);
     var cartTotal = 0;
     cart && cart.order_items.map(order_item => {
       cartTotal += order_item.quantity
     })
-   
     return (
       <div>
         <Menu inverted>
@@ -45,8 +49,7 @@ class CustomLayout extends React.Component {
                 <React.Fragment>
                   <Dropdown
                     icon='shopping cart'
-                    loading={loading} 
-                    // text={`${cart && cart.order_items[0].quantity : 0}`}
+                    loading={loading}
                     text={cartTotal}
                     pointing
                     className='link item'>
@@ -58,10 +61,10 @@ class CustomLayout extends React.Component {
                           </Dropdown.Item>
                         )
                       })}
-                      {cart && cart.order_items.length < 1 ? <Dropdown.Item>Cart empty</Dropdown.Item> : null}
+                      {cart && cart.order_items.length < 1 ? <Dropdown.Item>Your cart is currently empty.</Dropdown.Item> : null}
                       
                       <Dropdown.Divider />
-                      <Dropdown.Item icon='arrow right' text='Checkout' />
+                      <Dropdown.Item icon='arrow right' text='Checkout' onClick={() => this.props.history.push('/order-summary')}/>
                     </Dropdown.Menu>
                   </Dropdown>
                   <Menu.Item header onClick={() => this.props.logout()}>
@@ -162,12 +165,15 @@ const mapStateToProps = state => {
   };
 };
 
+
 const mapDispatchToProps = dispatch => {
   return {
     logout: () => dispatch(logout()),
+    refreshCart: () => dispatch(fetchCart()),
   };
 };
 
+// Layout Component wrapped withRouter, giving it access to location properties
 export default withRouter(
   connect(
     mapStateToProps,

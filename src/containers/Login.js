@@ -32,6 +32,7 @@ class LoginForm extends React.Component {
     const { error, loading, token } = this.props;
     const { username, password } = this.state;
     if (token) {
+      // this.props.refreshCart();
       return <Redirect to="/" />;
     }
     return (
