@@ -16,8 +16,6 @@ import {
   Sidebar,
   Visibility
 } from "semantic-ui-react";
-import { authAxios } from "../utils"
-import { orderSummaryURL } from '../URLconstants'
 import { fetchCart } from "../store/actions/cart"
 
 const getWidth = () => {

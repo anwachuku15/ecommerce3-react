@@ -34,22 +34,46 @@ class ItemSerializer(serializers.ModelSerializer):
 class OrderItemSerializer(serializers.ModelSerializer):
     # item must reference ItemSerializer
     item = StringSerializer()
+    item_obj = serializers.SerializerMethodField()
+    final_price = serializers.SerializerMethodField()
 
     class Meta:
         model = OrderItem
-        fields = ('id', 'item', 'quantity')
+        fields = ('id', 'item', 'item_obj', 'quantity', 'final_price')
+
+    def get_item_obj(self, obj):
+        return ItemSerializer(obj.item).data
+
+    def get_final_price(self, obj):
+        return obj.get_final_price()
+
+
+class CouponSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupon
+        fields = ('id', 'code', 'amount')
 
 
 class OrderSerializer(serializers.ModelSerializer):
     # Ultimately we want to display all order items and the number of items
     order_items = serializers.SerializerMethodField()
+    total = serializers.SerializerMethodField()
+    coupon = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
-        fields = ('id', 'order_items')
+        fields = ('id', 'order_items', 'total', 'coupon')
 
     def get_order_items(self, obj):
         return OrderItemSerializer(obj.items.all(), many=True).data
+
+    def get_total(self, obj):
+        return obj.get_total()
+
+    def get_coupon(self, obj):
+        if obj.coupon is not None:
+            return CouponSerializer(obj.coupon).data
+        return None
 
 
 # class AddressSerializer(serializers.ModelSerializer):

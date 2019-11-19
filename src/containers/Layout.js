@@ -9,9 +9,8 @@ import {
   List,
   Menu,
   Segment,
-  Icon
 } from "semantic-ui-react";
-import axios from 'axios';
+// import axios from 'axios';
 import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { logout } from "../store/actions/auth";
@@ -25,10 +24,10 @@ class CustomLayout extends React.Component {
   
   render() {
     const { authenticated, cart, loading } = this.props;
-    console.log(cart);
     var cartTotal = 0;
     cart && cart.order_items.map(order_item => {
       cartTotal += order_item.quantity
+      return cartTotal;
     })
     return (
       <div>
@@ -50,7 +49,7 @@ class CustomLayout extends React.Component {
                   <Dropdown
                     icon='shopping cart'
                     loading={loading}
-                    text={cartTotal}
+                    text={`${cartTotal}`}
                     pointing
                     className='link item'>
                     <Dropdown.Menu>

@@ -8,7 +8,6 @@ import { Button, Container, Dimmer, Icon, Image, Item, Label, Loader, Message, S
 import { productListURL, addToCartURL } from '../URLconstants'
 import { authAxios } from '../utils'
 import { fetchCart } from "../store/actions/cart"
-import { orderSummaryURL } from '../URLconstants'
 
 class ProductList extends React.Component {
 	state = {

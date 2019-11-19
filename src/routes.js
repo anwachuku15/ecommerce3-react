@@ -7,13 +7,15 @@ import Signup from "./containers/Signup";
 import HomepageLayout from "./containers/Home";
 import ProductList from "./containers/ProductList";
 import OrderSummary from "./containers/OrderSummary"
+import CheckoutForm from "./containers/CheckoutForm"
 
 const BaseRouter = () => (
   <Hoc>
     <Route exact path="/products" component={ProductList} />
     <Route path="/login" component={Login} />
     <Route path="/signup" component={Signup} />
-    <Route exact path="/order-summary" component={OrderSummary}/>
+    <Route exact path="/order-summary" component={OrderSummary} />
+    <Route exact path="/checkout" component={CheckoutForm} />
     <Route exact path="/" component={HomepageLayout} />
     
   </Hoc>

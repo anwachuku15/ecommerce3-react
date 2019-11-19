@@ -330,9 +330,12 @@ class PaymentView(View):
         form = PaymentForm(self.request.POST)
         userprofile = UserProfile.objects.get(user=self.request.user)
         if form.is_valid():
-            token = self.request.POST.get('stripeToken')
-            save_card = self.request.POST.get('save_card')
-            use_default_card = self.request.POST.get('use_default_card')
+            # token = self.request.POST.get('stripeToken')
+            token = form.cleaned_data.get('stripeToken')
+            # save_card = self.request.POST.get('save_card')
+            save_card = form.cleaned_data.get('save_card')
+            # use_default_card = self.request.POST.get('use_default_card')
+            use_default_card = form.cleaned_data.get('use_default_card')
 
             if save_card:
                 # if user doesn't have a stripe_customer_id...
