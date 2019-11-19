@@ -31,6 +31,47 @@ class ItemSerializer(serializers.ModelSerializer):
         return obj.get_label_display()
 
 
+class ItemVariationSerializer(serializers.ModelSerializer):
+    # variation = serializers.SerializerMethodField()
+    class Meta:
+        model = ItemVariation
+        fields = ('id', 'value', 'attachment')
+
+
+class VariationSerializer(serializers.ModelSerializer):
+    item_variations = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Variation
+        fields = ('id', 'name', 'item_variations')
+
+    def get_item_variations(self, obj):
+        return ItemVariationSerializer(obj.itemvariation_set.all(), many=True).data
+
+
+class ItemDetailSerializer(serializers.ModelSerializer):
+    # SerializerMethodField because category & label are choices...
+    # ... so we want the value and display name for the get_category & get_label methods
+    category = serializers.SerializerMethodField()
+    label = serializers.SerializerMethodField()
+    # must serialize variations (above), otherwise, the pk for each variation will be displayed
+    variations = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Item
+        fields = ('id', 'name', 'price', 'discount_price', 'category',
+                  'label', 'slug', 'description', 'image', 'variations')
+
+    def get_category(self, obj):
+        return obj.get_category_display()
+
+    def get_label(self, obj):
+        return obj.get_label_display()
+
+    def get_variations(self, obj):
+        return VariationSerializer(obj.variation_set.all(), many=True).data
+
+
 class OrderItemSerializer(serializers.ModelSerializer):
     # item must reference ItemSerializer
     item = StringSerializer()

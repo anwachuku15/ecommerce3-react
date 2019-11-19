@@ -1,15 +1,16 @@
-import React from 'react'
-
+import React, { Fragment } from 'react'
+// Router gives us access to match properties that allow us to access url parameters
+import { withRouter } from 'react-router-dom'
 // React-Redux connects actions to the component
 import { connect } from "react-redux";
 
 import axios from 'axios'
-import { Button, Container, Dimmer, Icon, Image, Item, Label, Loader, Message, Segment } from 'semantic-ui-react'
-import { productListURL, addToCartURL } from '../URLconstants'
+import { Button, Container, Card, Dimmer, Grid, Header, Icon, Image, Item, Label, Loader, Message, Segment, GridColumn } from 'semantic-ui-react'
+import { productDetailURL, addToCartURL } from '../URLconstants'
 import { authAxios } from '../utils'
 import { fetchCart } from "../store/actions/cart"
 
-class ProductList extends React.Component {
+class ProductDetail extends React.Component {
 	state = {
 		loading: false,
 		error: null,
@@ -17,24 +18,23 @@ class ProductList extends React.Component {
 		order: []
 	};
 
-	// componentDidMount() gets retrieves data to be loaded on this page
 	componentDidMount() {
-		console.log(this.props);
-
-		this.setState({ loading: true })
-		// Use normal Axios request because user doesn't need to be authenticated to view Product List
-		axios
-		.get(productListURL)
-		.then(res => {
-			console.log(res.data);
-			this.props.refreshCart();
-			this.setState({ data: res.data, loading: false});
-		})
-		.catch(err => {
-			this.setState({ error: err, loading: false });
-		});
+		this.handleFetchItem();
 		
 	}
+
+	handleFetchItem = () => {
+		const {match: { params }} = this.props
+		this.setState({ loading: true});
+		axios
+			.get(productDetailURL(params.productID))
+			.then(res => {
+				this.setState({ data: res.data, loading: false });
+			})
+			.catch(err => {
+				this.setState({ error: err, loading: false });
+			});
+	};
 
 	handleAddToCart = slug => {
 		this.setState({ loading: false })
@@ -52,6 +52,7 @@ class ProductList extends React.Component {
 
 	render() {
 		const { data, error, loading } = this.state;
+		const item = data;
 		// console.log();
 		return (
 			<Container>
@@ -71,22 +72,26 @@ class ProductList extends React.Component {
 						<Image src='/images/wireframe/short-paragraph.png' />
 					</Segment>
 				)}
-
-				<Item.Group divided>
-					{data.map(item => {
-						return (
-							<Item key={item.id}>
-								<Item.Image src={item.image} />
-								<Item.Content>
-									<Item.Header as='a' onClick={() => this.props.history.push(`/products/${item.id}`)}>{item.name}</Item.Header>
-									<Item.Meta>
-										<span className='cinema'>{item.category}</span>
-									</Item.Meta>
-									<Item.Description>{item.description}</Item.Description>
-									<Item.Extra>
-										<Button primary floated='right' icon labelPosition='right' onClick={() => this.handleAddToCart(item.slug)}>
-											Add to Cart
-											<Icon name='add to cart' />
+				<Grid columns={2} divided>
+					<Grid.Row>
+						<Grid.Column>
+							<Card
+								fluid
+								image={item.image}
+								header={item.name}
+								meta={item.category}
+								description={item.description}
+								extra={
+									<Fragment>
+										<Button
+											color="yellow"
+											floated="right"
+											icon
+											labelPosition="right"
+											onClick={() => this.handleAddToCart(item.slug)}
+										>
+											Add to cart
+											<Icon name="cart plus" />
 										</Button>
 										{item.discount_price && (
 											<Label as='a' tag 
@@ -115,12 +120,36 @@ class ProductList extends React.Component {
 												${item.price}
 											</Label>
 										)}
-									</Item.Extra>
-								</Item.Content>
-							</Item>
-						);
-					})}	
-				</Item.Group>
+									</Fragment>
+								}
+							/>
+						</Grid.Column>
+						<Grid.Column>
+							<Header as='h2'>Choose a Style</Header>
+							{data.variations && (
+								data.variations.map(v => {
+									return (
+										<Fragment>
+											<Header as='h3'>{v.name}</Header>
+											<Item.Group key={v.id} divided>
+												{v.item_variations.map(iv => {
+													return (
+														<Item key={iv.id}>
+															{iv.attachment && (
+																<Item.Image src={`http://localhost:8000${iv.attachment}`} />
+															)}
+															<Item.Content verticalAlign='middle'>{iv.value}</Item.Content>
+														</Item>
+													);
+												})}
+											</Item.Group>
+										</Fragment>
+									)
+								})	
+							)}
+						</Grid.Column>
+					</Grid.Row>
+				</Grid>
 			</Container>
 		);
 	}
@@ -133,9 +162,11 @@ const mapDispatchToProps = dispatch => {
 	};
  };
  
- export default connect(
-	// null instead of mapStateToProps
-	null,
-	mapDispatchToProps
- )(ProductList);
+ export default withRouter(
+	 connect(
+		// null instead of mapStateToProps
+		null,
+		mapDispatchToProps
+ 	)(ProductDetail)
+ );
  
