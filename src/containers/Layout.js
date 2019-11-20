@@ -56,7 +56,7 @@ class CustomLayout extends React.Component {
                       {cart && cart.order_items.map(order_item => {
                         return (
                           <Dropdown.Item key={order_item.id}>
-                            {order_item.item} (Qty: {order_item.quantity})
+                            {order_item.item.name} (Qty: {order_item.quantity})
                           </Dropdown.Item>
                         )
                       })}

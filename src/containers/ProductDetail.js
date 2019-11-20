@@ -5,7 +5,23 @@ import { withRouter } from 'react-router-dom'
 import { connect } from "react-redux";
 
 import axios from 'axios'
-import { Button, Container, Card, Dimmer, Grid, Header, Icon, Image, Item, Label, Loader, Message, Segment, GridColumn } from 'semantic-ui-react'
+import { Button, 
+			Container, 
+			Card, 
+			Dimmer, 
+			Divider, 
+			Form,
+			Grid, 
+			Header, 
+			Icon, 
+			Image, 
+			Item, 
+			Label, 
+			Loader, 
+			Message,
+			Segment,
+			Select,  
+			} from 'semantic-ui-react'
 import { productDetailURL, addToCartURL } from '../URLconstants'
 import { authAxios } from '../utils'
 import { fetchCart } from "../store/actions/cart"
@@ -14,13 +30,21 @@ class ProductDetail extends React.Component {
 	state = {
 		loading: false,
 		error: null,
+		formVisible: false,
 		data: [],
-		order: []
+		formData: {}
 	};
 
 	componentDidMount() {
 		this.handleFetchItem();
 		
+	}
+
+	handleToggleForm = () => {
+		const {formVisible} = this.state;
+		this.setState({
+			formVisible: !formVisible
+		});
 	}
 
 	handleFetchItem = () => {
@@ -30,17 +54,26 @@ class ProductDetail extends React.Component {
 			.get(productDetailURL(params.productID))
 			.then(res => {
 				this.setState({ data: res.data, loading: false });
+				console.log(res.data);
 			})
 			.catch(err => {
 				this.setState({ error: err, loading: false });
 			});
 	};
 
+	handleFormatData = formData => {
+		return Object.keys(formData).map(key => {
+			return formData[key];
+		})
+	}
+
 	handleAddToCart = slug => {
 		this.setState({ loading: false })
-		// Need to include auth token to make post requests from the API (utils.js)
+		const {formData} = this.state;
+		const variations = this.handleFormatData(formData);
+
 		authAxios
-		.post(addToCartURL, {slug})
+		.post(addToCartURL, {slug, variations})
 			.then(res => {
 				this.props.refreshCart();
 				this.setState({ loading: false});
@@ -50,10 +83,23 @@ class ProductDetail extends React.Component {
 			});
 	}
 
+	handleChange = (e, {name, value}) => {
+		// name --> variation type (color, size)
+		// value --> pk of choices (red, medium, etc.)
+		const {formData} = this.state;
+		const updatedFormData = {
+			...formData,
+			
+			[name]:value
+		};
+		this.setState({formData: updatedFormData});
+		console.log(name);
+		console.log(value);
+	}
+
 	render() {
-		const { data, error, loading } = this.state;
+		const { data, error, loading, formVisible, formData } = this.state;
 		const item = data;
-		// console.log();
 		return (
 			<Container>
 				{error && ( // if an error exists
@@ -75,26 +121,20 @@ class ProductDetail extends React.Component {
 				<Grid columns={2} divided>
 					<Grid.Row>
 						<Grid.Column>
-							<Card
-								fluid
-								image={item.image}
-								header={item.name}
-								meta={item.category}
-								description={item.description}
-								extra={
-									<Fragment>
-										<Button
-											color="yellow"
-											floated="right"
-											icon
-											labelPosition="right"
-											onClick={() => this.handleAddToCart(item.slug)}
-										>
-											Add to cart
-											<Icon name="cart plus" />
-										</Button>
+							<Card fluid>
+								<Image src={item.image} />
+								<Card.Content>
+									<Card.Header>
+										{item.name}
+									</Card.Header>
+									<Card.Header>
+										
+									</Card.Header>
+									<Card.Meta>{item.category}</Card.Meta>
+									<Card.Description>
+										{item.description}
 										{item.discount_price && (
-											<Label as='a' tag 
+											<Label as='a' tag style={{float:'right'}}
 												color={ // if the item's label is primary, blue. Elif label secondary, green. Else, olive.
 													item.label === 'primary' 
 														? 'blue' 
@@ -108,7 +148,7 @@ class ProductDetail extends React.Component {
 											</Label>
 										)}
 										{!item.discount_price && (
-											<Label as='a' tag
+											<Label as='a' tag style={{float:'right'}}
 												color={ // if the item's label is primary, blue. Elif label secondary, green. Else, olive.
 													item.label === 'primary' 
 														? 'blue' 
@@ -119,19 +159,66 @@ class ProductDetail extends React.Component {
 											>
 												${item.price}
 											</Label>
-										)}
-									</Fragment>
-								}
-							/>
+										)}		
+									</Card.Description>
+								</Card.Content>
+								<Card.Content>
+									<Button
+										color="yellow"
+										floated="right"
+										icon
+										labelPosition="right"
+										onClick={this.handleToggleForm}
+									>
+										Add to cart
+										<Icon name="cart plus" />
+									</Button>
+								</Card.Content>
+							</Card>
+							{formVisible && (
+								<Fragment>
+									<Divider />
+									<Form>
+										{data.variations.map(v => {
+											const name = v.name.toLowerCase();
+											return (
+												<Form.Field key={v.id}>
+													<Select
+														name={name}
+														onChange={this.handleChange}
+														options={v.item_variations.map(item => {
+															return { 
+																key: item.id,
+																text: item.value,
+																value: item.id 
+															}
+														})}
+														placeholder={v.name}
+														selection
+														value={formData[name]}
+													/>
+												</Form.Field>
+											)
+										})}
+										
+										<Form.Button style={{float:'right'}} primary onClick={() => this.handleAddToCart(item.slug)}>
+											Submit
+										</Form.Button>	
+										
+									</Form>
+								</Fragment>
+							)}
+							
+							
 						</Grid.Column>
 						<Grid.Column>
 							<Header as='h2'>Choose a Style</Header>
 							{data.variations && (
 								data.variations.map(v => {
 									return (
-										<Fragment>
+										<Fragment key={v.id}>
 											<Header as='h3'>{v.name}</Header>
-											<Item.Group key={v.id} divided>
+											<Item.Group divided>
 												{v.item_variations.map(iv => {
 													return (
 														<Item key={iv.id}>

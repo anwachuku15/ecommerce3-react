@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import { authAxios } from '../utils'
-import { Button, Container, Header, Icon, Image, Item, Label, Menu, Table } from 'semantic-ui-react'
+import { Button, Container, Dimmer, Header, Image, Label, Loader, Table, Divider, Message, Segment } from 'semantic-ui-react'
 import { orderSummaryURL } from '../URLconstants'
 import { Link } from 'react-router-dom'
+
 
 class OrderSummary extends React.Component {
    
@@ -22,28 +23,56 @@ class OrderSummary extends React.Component {
       .get(orderSummaryURL)
       .then(res => {
          this.setState({data: res.data, loading: false});
-         console.log(this.state.data.order_items[0].item_obj.image)
       })
       .catch(err => {
          if (err.response.status === 404) {
-            console.log(err.response)
-            this.setState({error: 'You currently do not have an order', loading: false})
+            this.setState({error: 'You currently do not have an order', loading: false});
+            console.log(err.response);
          } else {
             this.setState({error: err, loading: false});
          }
       });
    }
 
+   renderVariations = orderItem => {
+      // const lineBreak = React.createElement('br')
+      let text = '';
+      orderItem.item_variations.forEach(iv => {
+         text += `${iv.variation.name}: ${iv.value}`
+      })
+      return text;
+   }
+
    render() {
       const {data, error, loading} = this.state;
-      console.log(data);
+      if (data !== null) {
+         console.log(data.order_items[0].item_variations[0].attachment)
+      } 
       return (
          <Container>
-            <Header as='h3'>Order Summary</Header>
+            <Header as='h3' style={{textAlign:'center'}}>Order Summary</Header>
+            <Divider />
+            {error && (
+               <Message
+                  error
+                  header="There was an error"
+                  content={JSON.stringify(error)}
+               />
+            )}
+            {loading && (
+               <Segment>
+               <Dimmer active>
+                 <Loader />
+               </Dimmer>
+           
+               <Image src='https://react.semantic-ui.com/images/wireframe/short-paragraph.png' />
+             </Segment>
+            )}
+            {data==null && <Header.Subheader style={{textAlign:'center'}}>Your cart is currently empty</Header.Subheader>}
             {data && <Table celled>
                <Table.Header>
                <Table.Row>
-                  <Table.HeaderCell>Item #</Table.HeaderCell>
+                  <Table.HeaderCell>Item</Table.HeaderCell>
                   <Table.HeaderCell>Price</Table.HeaderCell>
                   <Table.HeaderCell>Quantity</Table.HeaderCell>
                   <Table.HeaderCell>Total Price</Table.HeaderCell>
@@ -51,27 +80,39 @@ class OrderSummary extends React.Component {
                </Table.Header>
          
                <Table.Body>
-                  {data.order_items.map((order_item, i) => {
-                     const localhost = 'http://localhost:8000';
-                     const item_img = order_item.item_obj.image;
-                     var item_img_url = localhost + item_img;
+                  {data.order_items.map((orderItem, i) => {
                      return (
-                        <Table.Row key={order_item.id}>
+                        <Table.Row key={orderItem.id}>
                            <Table.Cell>
+                           
                               <Header as='h4' image>
-                                 {/* <Image src='https://react.semantic-ui.com/images/avatar/small/lena.png' rounded size='mini' /> */}
-                                 <Image src={`http://localhost:8000${order_item.item_obj.image}`} rounded size='large' />
+                                 {orderItem.item_variations.map(iv => {
+                                    return (
+                                       <Fragment key={iv.id}>
+                                          {iv.attachment && (
+                                             <Image src={`http://localhost:8000${iv.attachment}`} rounded size='huge' />
+                                          )}
+                                       </Fragment>
+                                    )
+                                 })}
+                                 
                                  <Header.Content>
-                                    {order_item.item}
-                                 <Header.Subheader>Size: </Header.Subheader>
+                                 <Link to={`/products/${orderItem.item.id}`}><Header.Content>{orderItem.item.name}</Header.Content></Link>
+                                       {/* <Header.Subheader key={orderItem.item.id}>{this.renderVariations(orderItem)}</Header.Subheader> */}
+                                       {orderItem.item_variations.map(iv => {
+                                          return (
+                                             <Header.Subheader key={iv.id}>{iv.variation.name}: {iv.value}</Header.Subheader>
+                                          )
+                                       })}
                                  </Header.Content>
                               </Header>
+                              
                            </Table.Cell>
-                           <Table.Cell>${order_item.item_obj.price}</Table.Cell>
-                           <Table.Cell>{order_item.quantity}</Table.Cell>
+                           <Table.Cell>${orderItem.item.price}</Table.Cell>
+                           <Table.Cell>{orderItem.quantity}</Table.Cell>
                            <Table.Cell>
-                              {order_item.item_obj.discount_price && <Label color='green' ribbon>ON DISCOUNT!</Label>}
-                              {order_item.final_price}
+                              {orderItem.item.discount_price && <Label color='green' ribbon>ON DISCOUNT!</Label>}
+                              ${orderItem.final_price}
                            </Table.Cell>
                         </Table.Row>
                      )

@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import {CardElement, Elements, injectStripe, StripeProvider} from 'react-stripe-elements';
-import { Button, Checkbox, Container, Dimmer, Divider, Form, Header, Icon, Image, Item, Loader, Message, Segment, Label } from 'semantic-ui-react'
+import { Button, Container, Dimmer, Divider, Form, Header, Icon, Image, Item, Loader, Message, Segment, Label } from 'semantic-ui-react'
 import { Link } from 'react-router-dom'
 import { authAxios } from '../utils';
 import { checkoutURL, orderSummaryURL, addCouponURL } from '../URLconstants';
@@ -17,19 +17,19 @@ const OrderPreview = (props) => {
               const localhost = 'http://localhost:8000';
               return (
                 <Item key={order_item.id}>
-                  <Item.Image size='tiny' src={`${localhost}${order_item.item_obj.image}`} />
+                  <Item.Image size='tiny' src={`${localhost}${order_item.item.image}`} />
                   <Item.Content verticalAlign='middle'>
-                    <Item.Header as='a'>{order_item.item}</Item.Header>
+                    <Item.Header as='a'>{order_item.item.name}</Item.Header>
                     <Item.Extra>(Qty: {order_item.quantity})</Item.Extra>
                     <Item.Extra>
-                      {order_item.item_obj.discount_price 
+                      {order_item.item.discount_price 
                         ? <div>
                             <Label color='blue' basic>
-                              ${order_item.item_obj.discount_price}
+                              ${order_item.item.discount_price}
                             </Label>
                             <Label color='green' basic>On Sale!</Label>
                           </div>
-                        : <Label color='blue' basic>${order_item.item_obj.price}</Label>}
+                        : <Label color='blue' basic>${order_item.item.price}</Label>}
                       
                     </Item.Extra>
                   </Item.Content>
@@ -109,11 +109,11 @@ class CheckoutForm extends React.Component {
        this.setState({data: res.data, loading: false});
     })
     .catch(err => {
-       if (err.response.status === 404) {
-          console.log(err.response)
-          this.setState({error: 'You currently do not have an order', loading: false})
-       } else {
-          this.setState({error: err, loading: false});
+      if (err.response.status === 404) {
+        console.log(err.response)
+        this.setState({error: 'You currently do not have an order', loading: false})
+      } else {
+        this.setState({error: err, loading: false});
        }
     });
   }

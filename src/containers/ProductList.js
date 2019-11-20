@@ -4,7 +4,7 @@ import React from 'react'
 import { connect } from "react-redux";
 
 import axios from 'axios'
-import { Button, Container, Dimmer, Icon, Image, Item, Label, Loader, Message, Segment } from 'semantic-ui-react'
+import { Container, Dimmer, Image, Item, Label, Loader, Message, Segment } from 'semantic-ui-react'
 import { productListURL, addToCartURL } from '../URLconstants'
 import { authAxios } from '../utils'
 import { fetchCart } from "../store/actions/cart"
@@ -76,7 +76,7 @@ class ProductList extends React.Component {
 					{data.map(item => {
 						return (
 							<Item key={item.id}>
-								<Item.Image src={item.image} />
+								<Item.Image src={item.image} as='a' onClick={() => this.props.history.push(`/products/${item.id}`)}/>
 								<Item.Content>
 									<Item.Header as='a' onClick={() => this.props.history.push(`/products/${item.id}`)}>{item.name}</Item.Header>
 									<Item.Meta>
@@ -84,10 +84,6 @@ class ProductList extends React.Component {
 									</Item.Meta>
 									<Item.Description>{item.description}</Item.Description>
 									<Item.Extra>
-										<Button primary floated='right' icon labelPosition='right' onClick={() => this.handleAddToCart(item.slug)}>
-											Add to Cart
-											<Icon name='add to cart' />
-										</Button>
 										{item.discount_price && (
 											<Label as='a' tag 
 												color={ // if the item's label is primary, blue. Elif label secondary, green. Else, olive.

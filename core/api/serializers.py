@@ -31,11 +31,26 @@ class ItemSerializer(serializers.ModelSerializer):
         return obj.get_label_display()
 
 
-class ItemVariationSerializer(serializers.ModelSerializer):
-    # variation = serializers.SerializerMethodField()
+class VariationDetailSerializer(serializers.ModelSerializer):
+    item = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Variation
+        fields = ('id', 'name', 'item')
+
+    def get_item(self, obj):
+        return ItemSerializer(obj.item).data
+
+
+class ItemVariationDetailSerializer(serializers.ModelSerializer):
+    variation = serializers.SerializerMethodField()
+
     class Meta:
         model = ItemVariation
-        fields = ('id', 'value', 'attachment')
+        fields = ('id', 'value', 'variation', 'attachment')
+
+    def get_variation(self, obj):
+        return VariationDetailSerializer(obj.variation).data
 
 
 class VariationSerializer(serializers.ModelSerializer):
@@ -47,6 +62,13 @@ class VariationSerializer(serializers.ModelSerializer):
 
     def get_item_variations(self, obj):
         return ItemVariationSerializer(obj.itemvariation_set.all(), many=True).data
+
+
+class ItemVariationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ItemVariation
+        fields = ('id', 'value', 'attachment')
 
 
 class ItemDetailSerializer(serializers.ModelSerializer):
@@ -74,16 +96,20 @@ class ItemDetailSerializer(serializers.ModelSerializer):
 
 class OrderItemSerializer(serializers.ModelSerializer):
     # item must reference ItemSerializer
-    item = StringSerializer()
-    item_obj = serializers.SerializerMethodField()
+    # item = StringSerializer()
+    item = serializers.SerializerMethodField()
+    item_variations = serializers.SerializerMethodField()
     final_price = serializers.SerializerMethodField()
 
     class Meta:
         model = OrderItem
-        fields = ('id', 'item', 'item_obj', 'quantity', 'final_price')
+        fields = ('id', 'item', 'item_variations', 'quantity', 'final_price')
 
-    def get_item_obj(self, obj):
+    def get_item(self, obj):
         return ItemSerializer(obj.item).data
+
+    def get_item_variations(self, obj):
+        return ItemVariationDetailSerializer(obj.item_variations.all(), many=True).data
 
     def get_final_price(self, obj):
         return obj.get_final_price()

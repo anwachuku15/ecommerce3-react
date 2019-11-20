@@ -90,6 +90,7 @@ class OrderItem(models.Model):
                              on_delete=models.CASCADE)
 
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    item_variations = models.ManyToManyField(ItemVariation)
     quantity = models.IntegerField(default=1)
     ordered = models.BooleanField(default=False)
 
