@@ -32,12 +32,12 @@ class ProductDetail extends React.Component {
 		error: null,
 		formVisible: false,
 		data: [],
-		formData: {}
+		formData: {},
+		selectedColor: null,
 	};
 
 	componentDidMount() {
 		this.handleFetchItem();
-		
 	}
 
 	handleToggleForm = () => {
@@ -84,22 +84,39 @@ class ProductDetail extends React.Component {
 	}
 
 	handleChange = (e, {name, value}) => {
-		// name --> variation type (color, size)
-		// value --> pk of choices (red, medium, etc.)
 		const {formData} = this.state;
 		const updatedFormData = {
 			...formData,
-			
 			[name]:value
 		};
 		this.setState({formData: updatedFormData});
-		console.log(name);
-		console.log(value);
+		// console.log(value)
+		if (name === 'color') {
+			this.setState({selectedColor: value}, () => {
+				const {formData, selectedColor} = this.state
+				console.log(selectedColor)
+				console.log(formData)
+			})
+		}
 	}
 
 	render() {
-		const { data, error, loading, formVisible, formData } = this.state;
+		const { data, error, loading, formVisible, formData, selectedColor } = this.state;
 		const item = data;
+		const picChange = () => {
+			var newPic;
+			// console.log(item.variations[0])
+			const colorVariations = item.variations[0]
+			colorVariations.item_variations.map(iv => {
+				if (iv.id === selectedColor) {
+					newPic = iv.attachment;
+					// console.log(newPic);
+				}
+				return newPic
+			})
+				return `http://localhost:8000${newPic}`
+			}
+
 		return (
 			<Container>
 				{error && ( // if an error exists
@@ -122,7 +139,8 @@ class ProductDetail extends React.Component {
 					<Grid.Row>
 						<Grid.Column>
 							<Card fluid>
-								<Image src={item.image} />
+								<Image src={selectedColor === null ? item.image : picChange()} />
+								{/* <Image src={item.image} /> */}
 								<Card.Content>
 									<Card.Header>
 										{item.name}
@@ -190,7 +208,7 @@ class ProductDetail extends React.Component {
 															return { 
 																key: item.id,
 																text: item.value,
-																value: item.id 
+																value: item.id
 															}
 														})}
 														placeholder={v.name}
