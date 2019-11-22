@@ -18,65 +18,106 @@ import { fetchCart } from "../store/actions/cart";
 
 class CustomLayout extends React.Component {
 
+  state = {}
+
+  handleItemClick = (e, { name }) => this.setState({ activeItem: name })
+
   componentDidMount() {
     this.props.refreshCart();
   }
   
   render() {
     const { authenticated, cart, loading } = this.props;
+    const {activeItem} = this.state;
     var cartTotal = 0;
     cart && cart.order_items.map(order_item => {
       cartTotal += order_item.quantity
       return cartTotal;
     })
+
     return (
       <div>
-        <Menu inverted>
+        <Menu color='blue'>
           <Container>
             <Link to="/">
-              <Menu.Item header>Home</Menu.Item>
+              <Menu.Item 
+                header
+                name='home'
+                active={activeItem === 'home'}
+                // onClick={this.handleItemClick}
+              />
             </Link>
 
 
             <Link to="/products">
-              <Menu.Item header>Products</Menu.Item>
+              <Menu.Item 
+                header
+                name='products'
+                active={activeItem === 'products'}
+                // onClick={this.handleItemClick}
+              />
             </Link>
             
 
             <Menu.Menu position='right'>
               {authenticated ? (
                 <React.Fragment>
+                  <Link to='/profile'>
+                    <Menu.Item 
+                      header
+                      name='profile'
+                      active={activeItem === 'profile'}
+                      // onClick={this.handleItemClick}
+                    />
+                  </Link>
                   <Dropdown
                     icon='shopping cart'
                     loading={loading}
                     text={`${cartTotal}`}
                     pointing
-                    className='link item'>
+                    className='link item'
+                  >
                     <Dropdown.Menu>
-                      {cart && cart.order_items.map(order_item => {
-                        return (
-                          <Dropdown.Item key={order_item.id}>
-                            {order_item.item.name} (Qty: {order_item.quantity})
-                          </Dropdown.Item>
-                        )
-                      })}
-                      {cart && cart.order_items.length < 1 ? <Dropdown.Item>Your cart is currently empty.</Dropdown.Item> : null}
-                      
-                      <Dropdown.Divider />
-                      <Dropdown.Item icon='arrow right' text='Checkout' onClick={() => this.props.history.push('/order-summary')}/>
+                      {cart !== null ? (
+                        <React.Fragment>
+                          {cart.order_items.map(order_item => {
+                            return (
+                              <Dropdown.Item key={order_item.id}>
+                                {order_item.item.name} (Qty: {order_item.quantity})
+                              </Dropdown.Item>
+                            )
+                          })}
+                          {cart && cart.order_items.length < 1 ? <Dropdown.Item>Your cart is currently empty.</Dropdown.Item> : null}
+                          
+                          <Dropdown.Divider />
+                          <Dropdown.Item icon='arrow right' text='Checkout' onClick={() => {this.props.history.push('/order-summary'); this.setState({activeItem: ''})}}/>
+                        </React.Fragment>
+                      ) : (
+                        <Dropdown.Item>No items in your cart</Dropdown.Item>
+                      )}
                     </Dropdown.Menu>
                   </Dropdown>
-                  <Menu.Item header onClick={() => this.props.logout()}>
+                  <Menu.Item header onClick={() => {this.props.logout(); this.setState({activeItem: ''})}}>
                     Logout
                   </Menu.Item>
                 </React.Fragment>
               ) : (
                 <React.Fragment>
                   <Link to="/login">
-                    <Menu.Item header>Login</Menu.Item>
+                    <Menu.Item 
+                      header
+                      name='login'
+                      active={activeItem === 'login'}
+                      // onClick={this.handleItemClick}
+                    />
                   </Link>
                   <Link to="/signup">
-                    <Menu.Item header>Signup</Menu.Item>
+                    <Menu.Item 
+                      header
+                      name='signup'
+                      active={activeItem === 'signup'}
+                      // onClick={this.handleItemClick}
+                    />
                   </Link>
                 </React.Fragment>
               )}

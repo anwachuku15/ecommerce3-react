@@ -9,7 +9,7 @@ export const cartStart = () => {
 };
 
 export const cartSuccess = data => {
-   console.log(data)
+   // console.log(data)
    return {
       type: actionTypes.CART_SUCCESS,
       data

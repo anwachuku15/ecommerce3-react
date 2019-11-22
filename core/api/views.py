@@ -3,13 +3,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from core.models import *
 from .serializers import *
+from django_countries import countries
 
 import random
 import string
@@ -17,6 +18,11 @@ import string
 import stripe
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+class UserIDView(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response({'userID': request.user.id}, status=HTTP_200_OK)
 
 
 def create_ref_code():
@@ -79,7 +85,7 @@ class AddToCartView(APIView):
             if not order.items.filter(item__id=order_item.id).exists():
                 order.items.add(order_item)
             return Response(status=HTTP_200_OK)
-        
+
         else:
             ordered_date = timezone.now()
             order = Order.objects.create(
@@ -105,46 +111,40 @@ class PaymentView(APIView):
     def post(self, request, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
         userprofile = UserProfile.objects.get(user=self.request.user)
-        token = self.request.data.get('stripeToken')
-        save_card = False
-        # save_card = self.request.data.get('save_card')
-        use_default_card = False
-        # use_default_card = self.request.data.get('use_default_card')
+        token = request.data.get('stripeToken')
+        billing_address_id = request.data.get('selectedBillingAddress')
+        shipping_address_id = request.data.get('selectedShippingAddress')
+        
+        billing_address = Address.objects.get(id=billing_address_id)
+        shipping_address = Address.objects.get(id=shipping_address_id)
 
-        if save_card:
-            # if user doesn't have a stripe_customer_id...
-            if not userprofile.stripe_customer_id:
-                # Create a customer using Stripe's API
-                customer = stripe.Customer.create(
-                    email=self.request.user.email,
-                    source=token
-                )
-                userprofile.stripe_customer_id = customer['id']
-                userprofile.one_click_purchasing = True
-                userprofile.save()
-            else:
-                stripe.Customer.create_source(
-                    userprofile.stripe_customer_id,
-                    source=token
-                )
+        if userprofile.stripe_customer_id != '' and userprofile.stripe_customer_id is not None:
+            customer = stripe.Customer.retrieve(userprofile.stripe_customer_id)
+            customer.sources.create(source=token)
+        else:
+            customer = stripe.Customer.create(email=self.request.user.email)
+            customer.sources.create(source=token)
+            userprofile.stripe_customer_id = customer['id']
+            userprofile.one_click_purchasing = True
+            userprofile.save()
 
         amount = int(order.get_total() * 100)
         # Handling errors: https://stripe.com/docs/api/errors/handling?lang=python
         try:
 
-            if use_default_card or save_card:
-                charge = stripe.Charge.create(
-                    amount=amount,
-                    currency="usd",
-                    # customer contains source
-                    customer=userprofile.stripe_customer_id
-                )
-            else:
-                charge = stripe.Charge.create(
-                    amount=amount,
-                    currency="usd",
-                    source=token
-                )
+            # if use_default_card or save_card:
+            charge = stripe.Charge.create(
+                amount=amount,
+                currency="usd",
+                # customer contains source
+                customer=userprofile.stripe_customer_id
+            )
+            # else:
+            # charge = stripe.Charge.create(
+            #     amount=amount,
+            #     currency="usd",
+            #     source=token
+            # )
 
             # Create Payment
             payment = Payment()
@@ -160,6 +160,8 @@ class PaymentView(APIView):
 
             order.ordered = True
             order.payment = payment
+            order.billing_address = billing_address
+            order.shipping_address = shipping_address
             order.ref_code = create_ref_code()
             order.save()
 
@@ -213,3 +215,26 @@ class AddCouponView(APIView):
         order.coupon = coupon
         order.save()
         return Response({'message': "Succesfully added coupon"}, status=HTTP_200_OK)
+
+
+class AddressListView(ListAPIView):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = AddressSerializer
+
+    def get_queryset(self):
+        address_type = self.request.query_params.get('address_type', None)
+        qs = Address.objects.all()
+        if address_type is None:
+            return qs
+        return qs.filter(user=self.request.user, address_type=address_type)
+
+
+class AddressCreateView(CreateAPIView):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = AddressSerializer
+    queryset = Address.objects.all()
+
+
+class CountryListView(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response(countries, status=HTTP_200_OK)

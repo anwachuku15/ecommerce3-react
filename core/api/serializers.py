@@ -1,12 +1,13 @@
 from rest_framework import serializers
 from core.models import *
-
+from django_countries.serializer_fields import CountryField
 
 # class UserProfileSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = UserProfile
 #         fields = ('user', 'stripe_customer_id',
 #                   'one_click_purchasing')
+
 
 class StringSerializer(serializers.StringRelatedField):
     def to_internal_value(self, value):
@@ -143,11 +144,13 @@ class OrderSerializer(serializers.ModelSerializer):
         return None
 
 
-# class AddressSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Address
-#         fields = ('user', 'street_address', 'apartment_address',
-#                   'country', 'zip', 'address_type', 'default')
+class AddressSerializer(serializers.ModelSerializer):
+    country = CountryField()
+
+    class Meta:
+        model = Address
+        fields = ('id', 'user', 'street_address', 'apartment_address',
+                  'country', 'zip', 'address_type', 'default')
 
 
 # class PaymentSerializer(serializers.ModelSerializer):
