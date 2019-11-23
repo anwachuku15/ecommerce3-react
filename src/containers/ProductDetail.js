@@ -103,14 +103,13 @@ class ProductDetail extends React.Component {
 	render() {
 		const { data, error, loading, formVisible, formData, selectedColor } = this.state;
 		const item = data;
+		
 		const picChange = () => {
 			var newPic;
-			// console.log(item.variations[0])
 			const colorVariations = item.variations[0]
 			colorVariations.item_variations.map(iv => {
 				if (iv.id === selectedColor) {
 					newPic = iv.attachment;
-					// console.log(newPic);
 				}
 				return newPic
 			})

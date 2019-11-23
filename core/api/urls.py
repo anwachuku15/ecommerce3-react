@@ -12,5 +12,7 @@ urlpatterns = [
     path('add-coupon/', AddCouponView.as_view(), name='add-coupon'),
     path('addresses/', AddressListView.as_view(), name='address-list'),
     path('addresses/create/', AddressCreateView.as_view(), name='address-create'),
+    path('addresses/<pk>/update/', AddressUpdateView.as_view(), name='address-update'),
+    path('addresses/<pk>/delete/', AddressDeleteView.as_view(), name='address-delete'),
     path('countries/', CountryListView.as_view(), name='country-list'),
 ]

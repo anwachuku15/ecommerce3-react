@@ -2,6 +2,7 @@ import React from 'react'
 
 // React-Redux connects actions to the component
 import { connect } from "react-redux";
+import { Redirect } from 'react-router-dom'
 
 import axios from 'axios'
 import { Container, Dimmer, Image, Item, Label, Loader, Message, Segment } from 'semantic-ui-react'
@@ -52,6 +53,10 @@ class ProductList extends React.Component {
 
 	render() {
 		const { data, error, loading } = this.state;
+		const isAuthenticated = this.props;
+      if (!isAuthenticated) {
+         return <Redirect to='/login' />
+      }
 		// console.log();
 		return (
 			<Container>
@@ -128,10 +133,16 @@ const mapDispatchToProps = dispatch => {
 	  refreshCart: () => dispatch(fetchCart())
 	};
  };
+
+ const mapStateToProps = state => {
+	return {
+		isAuthenticated: state.auth.token !== null
+	}
+ }
  
  export default connect(
-	// null instead of mapStateToProps
-	null,
+	mapStateToProps,
 	mapDispatchToProps
  )(ProductList);
+ 
  

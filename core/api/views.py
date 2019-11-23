@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
-from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -114,7 +114,7 @@ class PaymentView(APIView):
         token = request.data.get('stripeToken')
         billing_address_id = request.data.get('selectedBillingAddress')
         shipping_address_id = request.data.get('selectedShippingAddress')
-        
+
         billing_address = Address.objects.get(id=billing_address_id)
         shipping_address = Address.objects.get(id=shipping_address_id)
 
@@ -232,6 +232,17 @@ class AddressListView(ListAPIView):
 class AddressCreateView(CreateAPIView):
     permission_classes = (IsAuthenticated, )
     serializer_class = AddressSerializer
+    queryset = Address.objects.all()
+
+
+class AddressUpdateView(UpdateAPIView):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = AddressSerializer
+    queryset = Address.objects.all()
+
+
+class AddressDeleteView(DestroyAPIView):
+    permission_classes = (IsAuthenticated, )
     queryset = Address.objects.all()
 
 

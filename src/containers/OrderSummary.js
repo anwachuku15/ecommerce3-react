@@ -1,4 +1,6 @@
 import React, { Fragment } from 'react'
+import { connect } from 'react-redux'
+import { Redirect } from 'react-router-dom'
 import { authAxios } from '../utils'
 import { Button, Container, Dimmer, Header, Image, Label, Loader, Table, Divider, Message, Segment } from 'semantic-ui-react'
 import { orderSummaryURL } from '../URLconstants'
@@ -45,6 +47,10 @@ class OrderSummary extends React.Component {
 
    render() {
       const {data, error, loading} = this.state;
+      const isAuthenticated = this.props;
+      if (!isAuthenticated) {
+         return <Redirect to='/login' />
+      }
       if (data !== null) {
          console.log(data.order_items[0].item_variations[0].attachment)
       } 
@@ -140,4 +146,10 @@ class OrderSummary extends React.Component {
 
 }
 
-export default OrderSummary
+const mapStateToProps = state => {
+   return {
+      isAuthenticated: state.auth.token !== null
+   }
+}
+
+export default connect(mapStateToProps)(OrderSummary)
