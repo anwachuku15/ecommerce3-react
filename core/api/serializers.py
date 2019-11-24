@@ -153,10 +153,10 @@ class AddressSerializer(serializers.ModelSerializer):
                   'country', 'zip', 'address_type', 'default')
 
 
-# class PaymentSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Payment
-#         fields = ('stripe_charge_id', 'user', 'amount', 'timestamp', 'default')
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ('id', 'amount', 'timestamp')
 
 
 # class CouponSerializer(serializers.ModelSerializer):

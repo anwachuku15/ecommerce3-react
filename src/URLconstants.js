@@ -4,6 +4,8 @@ const localhost = 'http://localhost:8000';
 const apiURL = '/api';
 export const endpoint = `${localhost}${apiURL}`;
 
+export const userIDURL = `${endpoint}/user-id/`;
+export const countryListURL = `${endpoint}/countries/`;
 export const productListURL = `${endpoint}/products/`;
 export const productDetailURL = id => `${endpoint}/products/${id}/`;
 export const orderItemUpdateQuantityURL = `${endpoint}/order-item/update-quantity/`
@@ -19,5 +21,4 @@ export const addressUpdateURL = id => `${endpoint}/addresses/${id}/update/`;
 export const addressDeleteURL = id => `${endpoint}/addresses/${id}/delete/`;
 export const addressMakeDefaultURL = `${endpoint}/addresses/make-default/`;
 export const addressRemoveDefaultURL = `${endpoint}/addresses/remove-default/`;
-export const countryListURL = `${endpoint}/countries/`;
-export const userIDURL = `${endpoint}/user-id/`;
+export const paymentListURL = `${endpoint}/payments/`;

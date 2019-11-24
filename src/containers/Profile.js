@@ -1,12 +1,65 @@
 import React from 'react';
 import { connect } from 'react-redux'
 // import { Redirect } from 'react-router-dom'
-import { Button, Card, Dimmer, Divider, Form, Grid, Header, Icon, Image, Label, Loader, Menu, Message, Segment } from 'semantic-ui-react'
-import { addressListURL, addressCreateURL, addressUpdateURL, addressMakeDefaultURL, addressRemoveDefaultURL, addressDeleteURL, countryListURL, userIDURL } from '../URLconstants'
+import { Button, Card, Dimmer, Divider, Form, Grid, Header, Icon, Image, Label, Loader, Menu, Message, Segment, Table } from 'semantic-ui-react'
+import { addressListURL, addressCreateURL, addressUpdateURL, addressMakeDefaultURL, addressRemoveDefaultURL, addressDeleteURL, countryListURL, userIDURL, paymentListURL } from '../URLconstants'
 import {authAxios} from '../utils'
 
 const UPDATE_FORM = 'UPDATE_FORM';
 const CREATE_FORM = 'CREATE_FORM';
+
+class PaymentHistory extends React.Component {
+   state = {
+      payments: []
+   }
+
+   componentDidMount() {
+      this.handleFetchPayments()
+   }
+
+   handleFetchPayments = () => {
+      this.setState({loading: true})
+      authAxios
+         .get(paymentListURL)
+         .then(res => {
+            this.setState({ 
+               loading: false,
+               payments: res.data
+            })
+         })
+         .catch(err => {
+            this.setState({error: err, loading: false,})
+         })
+   }
+
+   render() {
+      const {payments} = this.state;
+      return (
+         <Table celled>
+            <Table.Header>
+            <Table.Row>
+               <Table.HeaderCell>ID</Table.HeaderCell>
+               <Table.HeaderCell>Amount</Table.HeaderCell>
+               <Table.HeaderCell>Date</Table.HeaderCell>
+            </Table.Row>
+            </Table.Header>
+      
+            <Table.Body>
+               {payments.map(p => {
+                  return (
+                     <Table.Row>
+                        <Table.Cell>{p.id}</Table.Cell>
+                        <Table.Cell>${p.amount}</Table.Cell>
+                        <Table.Cell>{new Date(p.timestamp).toUTCString()}</Table.Cell>
+                     </Table.Row>
+                  );
+               })}
+            </Table.Body>
+         </Table>
+      )
+   }
+}
+
 
 class AddressForm extends React.Component {
    state = { 
@@ -175,10 +228,20 @@ class Profile extends React.Component {
    }
 
    handleItemClick = (e, { name }) => {
-      
       this.setState({ activeItem: name }, () => {
          this.handleFetchAddresses();
       });
+   }
+   
+   handleGetActiveItem = () => {
+      const {activeItem} = this.state;
+      if (activeItem === 'billingAddress') {
+         return "Billing Address"
+      } else if (activeItem === 'shippingAddress') {
+         return "Shipping Address"
+      } else {
+         return "Payment History"
+      }
    }
 
    handleDeleteAddress = addressID => {
@@ -270,9 +333,78 @@ class Profile extends React.Component {
       this.setState({ selectedAddress: null })
    }
 
+   renderAddresses = () => {
+      const { activeItem, addresses, countries, selectedAddress, userID } = this.state;
+      return (
+         <React.Fragment>
+            {addresses.length > 0 && <Card.Group>
+               {addresses.map(a => {
+                  return (
+                     <Card key={a.id}>
+                        <Card.Content>
+                        {a.default && (
+                           <React.Fragment>
+                              <Label color='blue' corner='right' icon='pin'></Label>
+                              <Card.Meta textAlign='right' style={{marginRight:'18px'}}>Default</Card.Meta>
+                           </React.Fragment>
+                        )}
+                        {!a.default && (
+                           <React.Fragment>
+                              <br />
+                           </React.Fragment>
+                        )}
+                        {a.apartment_address === '' ? 
+                           (<Card.Header>{a.street_address}</Card.Header>) :
+                           (<Card.Header>{a.street_address}, {a.apartment_address}</Card.Header>)
+                        }
+                           <Card.Meta>{a.country}</Card.Meta>
+                           <Card.Description>{a.zip}</Card.Description>
+                        </Card.Content>
+                        <Card.Content extra>
+                           {/* <Button.Group floated> */}
+                              
+                              <Button color='yellow' onClick={() => this.handleSelectAddress(a)} size='small'>
+                                 Update
+                              </Button>
+                              <Button color='red' onClick={() => this.handleDeleteAddress(a.id)} size='small'>
+                                 Delete
+                              </Button>
+                              {!a.default && <Button
+                                                // basic 
+                                                style={{paddingLeft:'12px', paddingRight:'12px'}} 
+                                                color='blue' 
+                                                onClick={() => {this.handleMakeDefault(a)}} 
+                                                size='small'>Default <Icon style={{marginRight:'0px', marginLeft:'3px'}} name='check circle' /></Button>}
+                              {a.default && <Button
+                                                basic
+                                                style={{paddingLeft:'12px', paddingRight:'12px'}}
+                                                color='grey' 
+                                                onClick={() => {this.handleRemoveDefault(a)}} 
+                                                size='small'> Default <Icon style={{marginRight:'0px', marginLeft:'3px'}} name='minus circle' /></Button>}
+                           {/* </Button.Group> */}
+                        </Card.Content>
+                        {/* <Card.Content extra>
+                        {!a.default && <Button 
+                                                color='black' 
+                                                onClick={() => {this.handleMakeDefault(a) }}
+                                                icon
+                                                labelPosition='right'>Default <Icon color='green' name='check circle outline'/></Button>}
+                        </Card.Content> */}
+                     </Card>
+                  )
+               })}
+            </Card.Group>}
+            
+            {addresses.length > 0 && <Divider/>}
+
+            {selectedAddress && (<AddressForm callback={this.handleCallback} userID={userID} activeItem={activeItem} selectedAddress={selectedAddress} countries={countries} formType={UPDATE_FORM} address={selectedAddress} />)}
+            {!selectedAddress && (<AddressForm callback={this.handleCallback} userID={userID} activeItem={activeItem} selectedAddress={selectedAddress} countries={countries} formType={CREATE_FORM} />)}
+         </React.Fragment>
+      )
+   }
 
    render() {
-      const { activeItem, error, loading, addresses, countries, selectedAddress, userID } = this.state;
+      const { activeItem, error, loading } = this.state;
       // const {isAuthenticated} = this.props;
       // if (!isAuthenticated) {
       //    return <Redirect to='/login' />
@@ -288,7 +420,7 @@ class Profile extends React.Component {
 						content={JSON.stringify(error)} // this explains the error
 					/>
                )}
-               {loading && ( // if loading: true
+               {/* {loading && ( // if loading: true
                   <Segment>
                      <Dimmer active inverted>
                         <Loader inverted>Loading</Loader>
@@ -296,7 +428,7 @@ class Profile extends React.Component {
                
                      <Image src='/images/wireframe/short-paragraph.png' />
                   </Segment>
-               )}
+               )} */}
                </Grid.Column>
             </Grid.Row>
 
@@ -325,70 +457,13 @@ class Profile extends React.Component {
                </Grid.Column>
 
                <Grid.Column width='12'>
-                  <Header>{`Update your ${activeItem === 'billingAddress' ? 'billing' : 'shipping'} address`}</Header>
+                  <Header>{this.handleGetActiveItem()}</Header>
                   <Divider/>
-                  {addresses.length > 0 && <Card.Group>
-                     {addresses.map(a => {
-                        return (
-                           <Card key={a.id}>
-                              <Card.Content>
-                              {a.default && (
-                                 <React.Fragment>
-                                    <Label color='blue' corner='right' icon='pin'></Label>
-                                    <Card.Meta textAlign='right' style={{marginRight:'18px'}}>Default</Card.Meta>
-                                 </React.Fragment>
-                              )}
-                              {!a.default && (
-                                 <React.Fragment>
-                                    <br />
-                                 </React.Fragment>
-                              )}
-                              {a.apartment_address === '' ? 
-                                 (<Card.Header>{a.street_address}</Card.Header>) :
-                                 (<Card.Header>{a.street_address}, {a.apartment_address}</Card.Header>)
-                              }
-                                 <Card.Meta>{a.country}</Card.Meta>
-                                 <Card.Description>{a.zip}</Card.Description>
-                              </Card.Content>
-                              <Card.Content extra>
-                                 {/* <Button.Group floated> */}
-                                    
-                                    <Button color='yellow' onClick={() => this.handleSelectAddress(a)} size='small'>
-                                       Update
-                                    </Button>
-                                    <Button color='red' onClick={() => this.handleDeleteAddress(a.id)} size='small'>
-                                       Delete
-                                    </Button>
-                                    {!a.default && <Button
-                                                      // basic 
-                                                      style={{paddingLeft:'12px', paddingRight:'12px'}} 
-                                                      color='blue' 
-                                                      onClick={() => {this.handleMakeDefault(a)}} 
-                                                      size='small'>Default <Icon style={{marginRight:'0px', marginLeft:'3px'}} name='check circle' /></Button>}
-                                    {a.default && <Button
-                                                      basic
-                                                      style={{paddingLeft:'12px', paddingRight:'12px'}}
-                                                      color='grey' 
-                                                      onClick={() => {this.handleRemoveDefault(a)}} 
-                                                      size='small'> Default <Icon style={{marginRight:'0px', marginLeft:'3px'}} name='minus circle' /></Button>}
-                                 {/* </Button.Group> */}
-                              </Card.Content>
-                              {/* <Card.Content extra>
-                              {!a.default && <Button 
-                                                      color='black' 
-                                                      onClick={() => {this.handleMakeDefault(a) }}
-                                                      icon
-                                                      labelPosition='right'>Default <Icon color='green' name='check circle outline'/></Button>}
-                              </Card.Content> */}
-                           </Card>
-                        )
-                     })}
-                  </Card.Group>
-                  }
-                  {addresses.length > 0 && <Divider/>}
-
-                  {selectedAddress && (<AddressForm callback={this.handleCallback} userID={userID} activeItem={activeItem} selectedAddress={selectedAddress} countries={countries} formType={UPDATE_FORM} address={selectedAddress} />)}
-                  {!selectedAddress && (<AddressForm callback={this.handleCallback} userID={userID} activeItem={activeItem} selectedAddress={selectedAddress} countries={countries} formType={CREATE_FORM} />)}
+                  {activeItem === 'paymentHistory' ? (
+                     <PaymentHistory />
+                  ) : (
+                     this.renderAddresses()
+                  )}
 
                   
                   

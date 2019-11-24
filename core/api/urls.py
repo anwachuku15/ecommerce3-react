@@ -3,6 +3,7 @@ from .views import *
 
 urlpatterns = [
     path('user-id/', UserIDView.as_view(), name='user-id'),
+    path('countries/', CountryListView.as_view(), name='country-list'),
     path('products/', ItemListView.as_view(), name='product-list'),
     # No item slug parameters because they are included in request.data
     path('products/<pk>/', ItemDetailView.as_view(), name='product-detail'),
@@ -18,5 +19,5 @@ urlpatterns = [
     path('addresses/<pk>/delete/', AddressDeleteView.as_view(), name='address-delete'),
     path('addresses/make-default/', AddressMakeDefaultView.as_view(), name='address-make-default'),
     path('addresses/remove-default/', AddressRemoveDefaultView.as_view(), name='address-remove-default'),
-    path('countries/', CountryListView.as_view(), name='country-list'),
+    path('payments/', PaymentListView.as_view(), name='payment-list'),
 ]

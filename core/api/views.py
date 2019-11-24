@@ -316,3 +316,11 @@ class AddressDeleteView(DestroyAPIView):
 class CountryListView(APIView):
     def get(self, request, *args, **kwargs):
         return Response(countries, status=HTTP_200_OK)
+
+
+class PaymentListView(ListAPIView):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = PaymentSerializer
+
+    def get_queryset(self):
+        return Payment.objects.filter(user=self.request.user)
