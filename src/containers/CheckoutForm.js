@@ -345,7 +345,7 @@ class CheckoutForm extends React.Component {
 const InjectedForm =  withRouter(injectStripe(CheckoutForm));
 
 const WrappedForm = () => (
-  <Container text>
+  <Container text style={{ marginTop: '4em' }}>
     <StripeProvider apiKey="pk_test_Y24gru2RVIHjVCmIiDwbzFwJ001gcNCf0i">
       <div>
         <h1 align='center'>Checkout</h1>

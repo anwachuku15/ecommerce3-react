@@ -37,7 +37,7 @@ class CustomLayout extends React.Component {
 
     return (
       <div>
-        <Menu color='blue'>
+        <Menu color='blue' fixed='top'>
           <Container>
             <Link to="/">
               <Menu.Item 
@@ -71,13 +71,14 @@ class CustomLayout extends React.Component {
                     />
                   </Link>
                   <Dropdown
+                    simple
                     icon='shopping cart'
                     loading={loading}
                     text={`${cartTotal}`}
-                    pointing
+                    // pointing
                     className='link item'
                   >
-                    <Dropdown.Menu>
+                    <Dropdown.Menu direction='left'>
                       {cart !== null ? (
                         <React.Fragment>
                           {cart.order_items.map(order_item => {
@@ -96,6 +97,7 @@ class CustomLayout extends React.Component {
                         <Dropdown.Item>No items in your cart</Dropdown.Item>
                       )}
                     </Dropdown.Menu>
+
                   </Dropdown>
                   <Menu.Item header onClick={() => {this.props.logout(); this.setState({activeItem: ''})}}>
                     Logout
@@ -127,7 +129,8 @@ class CustomLayout extends React.Component {
 
           </Container>
         </Menu>
-
+        
+        
         {this.props.children}
 
         <Segment

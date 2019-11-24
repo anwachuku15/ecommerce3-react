@@ -118,7 +118,7 @@ class ProductDetail extends React.Component {
 			}
 
 		return (
-			<Container>
+			<Container style={{ marginTop: '7em' }}>
 				{error && ( // if an error exists
 					<Message
 						error // this gives red styling

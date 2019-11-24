@@ -100,7 +100,7 @@ class OrderSummary extends React.Component {
       //    console.log(data.order_items[0].item_variations[0].attachment)
       // } 
       return (
-         <Container>
+         <Container style={{ marginTop: '5em' }}>
             <Header as='h3' style={{textAlign:'center'}}>Shopping Cart</Header>
             <Divider />
             {error && (
@@ -175,7 +175,7 @@ class OrderSummary extends React.Component {
                      )
                   })}
                   <Table.Row>
-                     <Table.Cell colSpan='3'/>
+                     <Table.Cell colSpan='3' textAlign='right'>{data.coupon && <Label color='green' style={{marginLeft:'10px'}}>Coupon -${data.coupon.amount}</Label>}</Table.Cell>
                      <Table.Cell textAlign='left'>
                         Total: ${data.total}
                      </Table.Cell>

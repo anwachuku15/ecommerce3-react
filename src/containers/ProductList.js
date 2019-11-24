@@ -1,14 +1,15 @@
-import React from 'react'
-
+import React, { Fragment } from 'react'
+import Sale from '../icons/sale'
 // React-Redux connects actions to the component
 import { connect } from "react-redux";
 import { Redirect } from 'react-router-dom'
 
 import axios from 'axios'
-import { Container, Dimmer, Image, Item, Label, Loader, Message, Segment } from 'semantic-ui-react'
+import { Card, Container, Dimmer, Image, Item, Label, Loader, Message, Segment, Header } from 'semantic-ui-react'
 import { productListURL, addToCartURL } from '../URLconstants'
 import { authAxios } from '../utils'
 import { fetchCart } from "../store/actions/cart"
+import { sale } from '../icons/sale.png'
 
 class ProductList extends React.Component {
 	state = {
@@ -59,7 +60,7 @@ class ProductList extends React.Component {
       }
 		// console.log();
 		return (
-			<Container>
+			<Container style={{ marginTop: '7em' }}>
 				{error && ( // if an error exists
 					<Message
 						error // this gives red styling
@@ -77,34 +78,33 @@ class ProductList extends React.Component {
 					</Segment>
 				)}
 
-				<Item.Group divided>
+				{/* <Header textAlign='center'>Products</Header> */}
+				<Card.Group itemsPerRow={4}>
 					{data.map(item => {
 						return (
-							<Item key={item.id}>
-								<Item.Image src={item.image} as='a' onClick={() => this.props.history.push(`/products/${item.id}`)}/>
-								<Item.Content>
-									<Item.Header as='a' onClick={() => this.props.history.push(`/products/${item.id}`)}>{item.name}</Item.Header>
-									<Item.Meta>
+							<Card key={item.id}>
+								<Image src={item.image} as='a' onClick={() => this.props.history.push(`/products/${item.id}`)}/>
+								<Card.Content>
+								<Card.Content as='a' onClick={() => this.props.history.push(`/products/${item.id}`)}>{item.name}</Card.Content>
+									
+									{/* <Card.Meta>
 										<span className='cinema'>{item.category}</span>
-									</Item.Meta>
-									<Item.Description>{item.description}</Item.Description>
-									<Item.Extra>
+									</Card.Meta>
+									<Card.Description>{item.description}</Card.Description> */}
+									
+									<Card.Content extra>
 										{item.discount_price && (
-											<Label as='a' tag 
-												color={ // if the item's label is primary, blue. Elif label secondary, green. Else, olive.
-													item.label === 'primary' 
-														? 'blue' 
-														: item.label === 'secondary' 
-														? 'green' 
-														: 'olive' 
-												}
-											>
-												${item.discount_price}
-												
-											</Label>
+											<Fragment>
+												<Label corner><Sale /></Label>
+												<Label as='a' tag style={{marginTop:'4px'}}
+													color={item.label === 'primary' ? 'blue' : item.label === 'secondary' ? 'green' : 'olive'}
+												>
+													${item.discount_price}
+												</Label>
+											</Fragment>
 										)}
 										{!item.discount_price && (
-											<Label as='a' tag
+											<Label as='a' tag style={{marginTop:'4px'}}
 												color={ // if the item's label is primary, blue. Elif label secondary, green. Else, olive.
 													item.label === 'primary' 
 														? 'blue' 
@@ -116,12 +116,12 @@ class ProductList extends React.Component {
 												${item.price}
 											</Label>
 										)}
-									</Item.Extra>
-								</Item.Content>
-							</Item>
+									</Card.Content>
+								</Card.Content>
+							</Card>
 						);
 					})}	
-				</Item.Group>
+				</Card.Group>
 			</Container>
 		);
 	}
