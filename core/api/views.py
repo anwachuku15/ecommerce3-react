@@ -53,8 +53,6 @@ class AddToCartView(APIView):
         if len(variations) < minimum_variation_count:
             return Response({'message': 'Please specifiy color and size'}, status=HTTP_400_BAD_REQUEST)
 
-        # order_item, created = OrderItem.objects.get_or_create(
-        #     item=item, user=request.user, ordered=False)
         order_item_qs = OrderItem.objects.filter(
             item=item,
             user=request.user,
@@ -105,6 +103,46 @@ class OrderDetailView(RetrieveAPIView):
 
         except ObjectDoesNotExist:
             raise Http404('You do not have an active order')
+
+
+class OrderItemDeleteView(DestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = OrderItem.objects.all()
+
+
+class OrderQuantityUpdateView(APIView):
+    def post(self, request, *args, **kwargs):
+        slug = request.data.get('slug', None)
+        variations = request.data.get('variations', [])
+        if slug is None:
+            return Response({'message': 'Invalid data'}, status=HTTP_400_BAD_REQUEST)
+        item = get_object_or_404(Item, slug=slug)
+        print(variations)
+
+        cart = Order.objects.filter(user=request.user, ordered=False)
+        if cart.exists():
+            order = cart[0]
+
+            if order.items.filter(item__slug=item.slug).exists():
+
+                for v in variations:
+                    order_item_qs = OrderItem.objects.filter(
+                        user=request.user, item=item, item_variations__exact=v, ordered=False)
+
+                if order_item_qs.exists():
+                    order_item = order_item_qs.first()
+
+                    if order_item.quantity > 1:
+                        order_item.quantity -= 1
+                        order_item.save()
+                    else:
+                        order_item.delete()
+                    # order.items.remove(order_item)
+                    return Response(status=HTTP_200_OK)
+            else:
+                return Response({'message': 'This item is not in your cart'}, status=HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'message': 'You do not have an active order'}, status=HTTP_400_BAD_REQUEST)
 
 
 class PaymentView(APIView):
@@ -240,6 +278,18 @@ class AddressUpdateView(UpdateAPIView):
     serializer_class = AddressSerializer
     queryset = Address.objects.all()
 
+
+# class AddressUpdateDefaultView(APIView):
+#     def post(self, request, *args, **kwargs):
+
+#         if use_default_shipping:
+#             print('Using default shipping address')
+#             # Search for address with type 'S' and default=True
+#             address_qs = Address.objects.filter(
+#                 user=self.request.user,
+#                 address_type='S',
+#                 default=True
+#             )
 
 class AddressDeleteView(DestroyAPIView):
     permission_classes = (IsAuthenticated, )

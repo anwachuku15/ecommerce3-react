@@ -1,10 +1,10 @@
 import React, { Fragment } from 'react'
 import { connect } from 'react-redux'
-import { Redirect } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import { authAxios } from '../utils'
-import { Button, Container, Dimmer, Header, Image, Label, Loader, Table, Divider, Message, Segment } from 'semantic-ui-react'
-import { orderSummaryURL } from '../URLconstants'
-import { Link } from 'react-router-dom'
+import { Button, Container, Dimmer, Header, Image, Label, Loader, Table, Divider, Message, Segment, Icon } from 'semantic-ui-react'
+import { addToCartURL, orderSummaryURL, orderItemDeleteURL, orderItemUpdateQuantityURL } from '../URLconstants'
+
 
 
 class OrderSummary extends React.Component {
@@ -45,18 +45,63 @@ class OrderSummary extends React.Component {
       return text;
    }
 
+   handleFormatData = itemVariations => {
+      // take all item_variation ids and put into an array
+		return Object.keys(itemVariations).map(key => {
+			return itemVariations[key].id;
+		})
+	}
+
+   handleAddToCart = (slug, itemVariations) => {
+		this.setState({ loading: false })
+		const variations = this.handleFormatData(itemVariations);
+		authAxios
+		.post(addToCartURL, {slug, variations})
+			.then(res => {
+				this.handleFetchOrder();
+				this.setState({ loading: false});
+			})
+			.catch(err => {
+				this.setState({ error: err, loading: false });
+			});
+   }
+   
+   handleRemoveOneFromCart = (slug, itemVariations) => {
+      const variations = this.handleFormatData(itemVariations);
+      authAxios
+      .post(orderItemUpdateQuantityURL, {slug, variations})
+      .then(res => {
+         this.handleFetchOrder();
+      })
+      .catch(err => {
+         this.setState({error: err, loading: false});
+      });
+   }
+
+   handleRemoveItem = itemID => {
+      authAxios
+         .delete(orderItemDeleteURL(itemID))
+         .then(res => {
+            this.handleFetchOrder();
+         })
+         .catch(err => {
+            this.setState({error: err, loading: false});
+         });
+   }
+
    render() {
       const {data, error, loading} = this.state;
+      console.log(data);
       const isAuthenticated = this.props;
       if (!isAuthenticated) {
-         return <Redirect to='/login' />
+         return <Redirect to="/login" />
       }
-      if (data !== null) {
-         console.log(data.order_items[0].item_variations[0].attachment)
-      } 
+      // if (data !== null) {
+      //    console.log(data.order_items[0].item_variations[0].attachment)
+      // } 
       return (
          <Container>
-            <Header as='h3' style={{textAlign:'center'}}>Order Summary</Header>
+            <Header as='h3' style={{textAlign:'center'}}>Shopping Cart</Header>
             <Divider />
             {error && (
                <Message
@@ -74,8 +119,9 @@ class OrderSummary extends React.Component {
                <Image src='https://react.semantic-ui.com/images/wireframe/short-paragraph.png' />
              </Segment>
             )}
-            {data==null && <Header.Subheader style={{textAlign:'center'}}>Your cart is currently empty</Header.Subheader>}
-            {data && <Table celled>
+            {(data==null || data.total===0) && <Header.Subheader style={{textAlign:'center'}}>Your cart is currently empty. Continue browsing <Link to='/products'>here</Link>.</Header.Subheader>}
+            
+            {data && data.total>0 && <Table celled>
                <Table.Header>
                <Table.Row>
                   <Table.HeaderCell>Item</Table.HeaderCell>
@@ -115,10 +161,15 @@ class OrderSummary extends React.Component {
                               
                            </Table.Cell>
                            <Table.Cell>${orderItem.item.price}</Table.Cell>
-                           <Table.Cell>{orderItem.quantity}</Table.Cell>
+                           <Table.Cell textAlign='center'>
+                              <Icon onClick={() => this.handleRemoveOneFromCart(orderItem.item.slug, orderItem.item_variations)} name='minus circle' color='red' style={{cursor:'pointer', float:'left'}}/>
+                              {orderItem.quantity}
+                              <Icon onClick={() => this.handleAddToCart(orderItem.item.slug, orderItem.item_variations)} name='plus circle' color='blue' style={{cursor:'pointer', float:'right'}}/>
+                           </Table.Cell>
                            <Table.Cell>
                               {orderItem.item.discount_price && <Label color='green' ribbon>ON DISCOUNT!</Label>}
                               ${orderItem.final_price}
+                              <Icon onClick={() => this.handleRemoveItem(orderItem.id)} name='trash alternate' color='red' style={{float:'right', cursor:'pointer'}}/>
                            </Table.Cell>
                         </Table.Row>
                      )

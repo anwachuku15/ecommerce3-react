@@ -62,6 +62,7 @@ class ProductDetail extends React.Component {
 	};
 
 	handleFormatData = formData => {
+		// convert {color: 1, size: 2} to [1,2]
 		return Object.keys(formData).map(key => {
 			return formData[key];
 		})

@@ -6,6 +6,8 @@ export const endpoint = `${localhost}${apiURL}`;
 
 export const productListURL = `${endpoint}/products/`;
 export const productDetailURL = id => `${endpoint}/products/${id}/`;
+export const orderItemUpdateQuantityURL = `${endpoint}/order-item/update-quantity/`
+export const orderItemDeleteURL = id => `${endpoint}/order-items/${id}/delete/`;
 export const addToCartURL = `${endpoint}/add-to-cart/`;
 // export const fetchCart = `${endpoint}/fetch-cart/`;
 export const orderSummaryURL = `${endpoint}/order-summary/`;
