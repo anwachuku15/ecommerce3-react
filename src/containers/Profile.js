@@ -374,13 +374,13 @@ class Profile extends React.Component {
                                                 style={{paddingLeft:'12px', paddingRight:'12px'}} 
                                                 color='blue' 
                                                 onClick={() => {this.handleMakeDefault(a)}} 
-                                                size='small'>Default <Icon style={{marginRight:'0px', marginLeft:'3px'}} name='check circle' /></Button>}
+                                                size='small'>Default <Icon style={{marginRight:'0px', marginLeft:'3px'}} name='plus circle' /></Button>}
                               {a.default && <Button
                                                 basic
                                                 style={{paddingLeft:'12px', paddingRight:'12px'}}
-                                                color='grey' 
+                                                color='blue' 
                                                 onClick={() => {this.handleRemoveDefault(a)}} 
-                                                size='small'> Default <Icon style={{marginRight:'0px', marginLeft:'3px'}} name='minus circle' /></Button>}
+                                                size='small'> Default <Icon style={{marginRight:'0px', marginLeft:'3px'}} name='check circle' /></Button>}
                            {/* </Button.Group> */}
                         </Card.Content>
                         {/* <Card.Content extra>
