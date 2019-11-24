@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux'
 // import { Redirect } from 'react-router-dom'
-import { Button, Card, Dimmer, Divider, Form, Grid, Header, Image, Label, Loader, Menu, Message, Segment } from 'semantic-ui-react'
-import { addressListURL, addressCreateURL, addressUpdateURL, addressDeleteURL, countryListURL, userIDURL } from '../URLconstants'
+import { Button, Card, Dimmer, Divider, Form, Grid, Header, Icon, Image, Label, Loader, Menu, Message, Segment } from 'semantic-ui-react'
+import { addressListURL, addressCreateURL, addressUpdateURL, addressMakeDefaultURL, addressRemoveDefaultURL, addressDeleteURL, countryListURL, userIDURL } from '../URLconstants'
 import {authAxios} from '../utils'
 
 const UPDATE_FORM = 'UPDATE_FORM';
@@ -197,7 +197,27 @@ class Profile extends React.Component {
       this.setState({ selectedAddress: address });
    }
 
+   handleMakeDefault = address => {
+      authAxios
+         .post(addressMakeDefaultURL, {address})
+         .then(res => {
+            this.handleCallback();
+         })
+         .catch(err => {
+            this.setState({error: err})
+         })
+   }
 
+   handleRemoveDefault = address => {
+      authAxios
+         .post(addressRemoveDefaultURL, {address})
+         .then(res => {
+            this.handleCallback();
+         })
+         .catch(err => {
+            this.setState({error: err})
+         })
+   }
 
    handleFetchUserID = () => {
       authAxios
@@ -209,7 +229,6 @@ class Profile extends React.Component {
             this.setState({error: err})
          })
    }
-
 
    handleFormatCountries = countries => {
       const keys = Object.keys(countries);
@@ -332,15 +351,35 @@ class Profile extends React.Component {
                                  <Card.Description>{a.zip}</Card.Description>
                               </Card.Content>
                               <Card.Content extra>
-                                 {/* <Button.Group> */}
+                                 {/* <Button.Group floated> */}
+                                    
                                     <Button color='yellow' onClick={() => this.handleSelectAddress(a)} size='small'>
                                        Update
                                     </Button>
                                     <Button color='red' onClick={() => this.handleDeleteAddress(a.id)} size='small'>
                                        Delete
                                     </Button>
-                                    {/* </Button.Group> */}
+                                    {!a.default && <Button
+                                                      // basic 
+                                                      style={{paddingLeft:'12px', paddingRight:'12px'}} 
+                                                      color='blue' 
+                                                      onClick={() => {this.handleMakeDefault(a)}} 
+                                                      size='small'>Default <Icon style={{marginRight:'0px', marginLeft:'3px'}} name='check circle' /></Button>}
+                                    {a.default && <Button
+                                                      basic
+                                                      style={{paddingLeft:'12px', paddingRight:'12px'}}
+                                                      color='grey' 
+                                                      onClick={() => {this.handleRemoveDefault(a)}} 
+                                                      size='small'> Default <Icon style={{marginRight:'0px', marginLeft:'3px'}} name='minus circle' /></Button>}
+                                 {/* </Button.Group> */}
                               </Card.Content>
+                              {/* <Card.Content extra>
+                              {!a.default && <Button 
+                                                      color='black' 
+                                                      onClick={() => {this.handleMakeDefault(a) }}
+                                                      icon
+                                                      labelPosition='right'>Default <Icon color='green' name='check circle outline'/></Button>}
+                              </Card.Content> */}
                            </Card>
                         )
                      })}

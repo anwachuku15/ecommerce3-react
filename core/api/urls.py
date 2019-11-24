@@ -16,5 +16,7 @@ urlpatterns = [
     path('addresses/create/', AddressCreateView.as_view(), name='address-create'),
     path('addresses/<pk>/update/', AddressUpdateView.as_view(), name='address-update'),
     path('addresses/<pk>/delete/', AddressDeleteView.as_view(), name='address-delete'),
+    path('addresses/make-default/', AddressMakeDefaultView.as_view(), name='address-make-default'),
+    path('addresses/remove-default/', AddressRemoveDefaultView.as_view(), name='address-remove-default'),
     path('countries/', CountryListView.as_view(), name='country-list'),
 ]

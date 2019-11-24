@@ -69,13 +69,13 @@ class OrderSummary extends React.Component {
    handleRemoveOneFromCart = (slug, itemVariations) => {
       const variations = this.handleFormatData(itemVariations);
       authAxios
-      .post(orderItemUpdateQuantityURL, {slug, variations})
-      .then(res => {
-         this.handleFetchOrder();
-      })
-      .catch(err => {
-         this.setState({error: err, loading: false});
-      });
+         .post(orderItemUpdateQuantityURL, {slug, variations})
+         .then(res => {
+            this.handleFetchOrder();
+         })
+         .catch(err => {
+            this.setState({error: err, loading: false});
+         });
    }
 
    handleRemoveItem = itemID => {

@@ -279,17 +279,34 @@ class AddressUpdateView(UpdateAPIView):
     queryset = Address.objects.all()
 
 
-# class AddressUpdateDefaultView(APIView):
-#     def post(self, request, *args, **kwargs):
+class AddressMakeDefaultView(APIView):
+    # pass
+    def post(self, request, *args, **kwargs):
+        selected_address = request.data.get('address', None)
+        if selected_address is None:
+            return Response(status=HTTP_400_BAD_REQUEST)
+        print(selected_address['id'])
+        address_qs = Address.objects.filter(id=selected_address['id'])
 
-#         if use_default_shipping:
-#             print('Using default shipping address')
-#             # Search for address with type 'S' and default=True
-#             address_qs = Address.objects.filter(
-#                 user=self.request.user,
-#                 address_type='S',
-#                 default=True
-#             )
+        address = address_qs.first()
+        address.default = True
+        address.save()
+        return Response(status=HTTP_200_OK)
+
+
+class AddressRemoveDefaultView(APIView):
+    def post(self, request, *args, **kwargs):
+        selected_address = request.data.get('address', None)
+        if selected_address is None:
+            return Response(status=HTTP_400_BAD_REQUEST)
+        print(selected_address['id'])
+        address_qs = Address.objects.filter(id=selected_address['id'])
+
+        address = address_qs.first()
+        address.default = False
+        address.save()
+        return Response(status=HTTP_200_OK)
+
 
 class AddressDeleteView(DestroyAPIView):
     permission_classes = (IsAuthenticated, )
