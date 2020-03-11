@@ -4,7 +4,7 @@ import Hoc from "./hoc/hoc";
 
 import Login from "./containers/Login";
 import Signup from "./containers/Signup";
-import HomepageLayout from "./containers/Home";
+// import HomepageLayout from "./containers/Home";
 import ProductList from "./containers/ProductList";
 import ProductDetail from "./containers/ProductDetail";
 import OrderSummary from "./containers/OrderSummary"
@@ -20,7 +20,7 @@ const BaseRouter = () => (
     <Route path="/signup" component={Signup} />
     <Route path="/order-summary" component={OrderSummary} />
     <Route path="/checkout" component={CheckoutForm} />
-    <Route exact path="/" component={HomepageLayout} />
+    <Route exact path="/" component={ProductList} />
     
   </Hoc>
 );

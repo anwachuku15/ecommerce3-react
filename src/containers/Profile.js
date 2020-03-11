@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux'
 // import { Redirect } from 'react-router-dom'
-import { Button, Card, Dimmer, Divider, Form, Grid, Header, Icon, Image, Label, Loader, Menu, Message, Segment, Table } from 'semantic-ui-react'
+import { Button, Card, /*Dimmer,*/ Divider, Form, Grid, Header, Icon, /*Image,*/ Label, /*Loader,*/ Menu, Message, /*Segment,*/ Table } from 'semantic-ui-react'
 import { addressListURL, addressCreateURL, addressUpdateURL, addressMakeDefaultURL, addressRemoveDefaultURL, addressDeleteURL, countryListURL, userIDURL, paymentListURL } from '../URLconstants'
 import {authAxios} from '../utils'
 
@@ -404,7 +404,7 @@ class Profile extends React.Component {
    }
 
    render() {
-      const { activeItem, error, loading } = this.state;
+      const { activeItem, error, /*loading*/ } = this.state;
       // const {isAuthenticated} = this.props;
       // if (!isAuthenticated) {
       //    return <Redirect to='/login' />

@@ -34,28 +34,13 @@ class DesktopContainer extends Component {
   componentDidMount() {
     console.log(this.props);
   }
-  
-//   handleFetchCart = () => {
-//     this.setState({loading: true});
-//     authAxios
-// 		.get(orderSummaryURL)
-// 		.then(res => {
-// 			console.log(res.data);
-// 			this.props.refreshCart();
-// 			this.setState({ data: res.data, loading: false});
-// 		})
-// 		.catch(err => {
-// 			this.setState({ error: err, loading: false });
-// 		});
-//  }
 
   hideFixedMenu = () => this.setState({ fixed: false });
   showFixedMenu = () => this.setState({ fixed: true });
 
   render() {
     const { children } = this.props;
-    // console.log(this.props);
-
+    
     return (
       <Responsive getWidth={getWidth} minWidth={Responsive.onlyTablet.minWidth}>
         <Visibility

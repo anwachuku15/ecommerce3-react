@@ -5,11 +5,11 @@ import { connect } from "react-redux";
 import { Redirect } from 'react-router-dom'
 
 import axios from 'axios'
-import { Card, Container, Dimmer, Image, Item, Label, Loader, Message, Segment, Header } from 'semantic-ui-react'
+import { Card, Container, Dimmer, Image, /*Item,*/ Label, Loader, Message, Segment, /*Header*/ } from 'semantic-ui-react'
 import { productListURL, addToCartURL } from '../URLconstants'
 import { authAxios } from '../utils'
 import { fetchCart } from "../store/actions/cart"
-import { sale } from '../icons/sale.png'
+// import { sale } from '../icons/sale.png'
 
 class ProductList extends React.Component {
 	state = {
@@ -22,7 +22,7 @@ class ProductList extends React.Component {
 	// componentDidMount() gets retrieves data to be loaded on this page
 	componentDidMount() {
 		console.log(this.props);
-
+		
 		this.setState({ loading: true })
 		// Use normal Axios request because user doesn't need to be authenticated to view Product List
 		axios

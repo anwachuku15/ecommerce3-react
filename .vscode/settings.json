@@ -12,5 +12,8 @@
   },
   "eslint.alwaysShowStatus": true,
   "eslint.autoFixOnSave": true,
-  "editor.tabSize": 3
+  "editor.tabSize": 3,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
 }

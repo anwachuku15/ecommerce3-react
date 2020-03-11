@@ -31,10 +31,14 @@ class LoginForm extends React.Component {
   render() {
     const { error, loading, token } = this.props;
     const { username, password } = this.state;
+
     if (token) {
-      // this.props.refreshCart();
+      console.log(token)
       return <Redirect to="/" />;
+    } else { 
+      console.log('hello') 
     }
+
     return (
       <Grid
         textAlign="center"
