@@ -1,5 +1,7 @@
 import axios from "axios";
 import * as actionTypes from "./actionTypes";
+// import { fetchCart } from "./cart";
+
 
 export const authStart = () => {
   return {
@@ -37,7 +39,7 @@ export const checkAuthTimeout = expirationTime => {
   };
 };
 
-export const authLogin = (username, password) => {
+export const authLogin = (username, password, history) => {
   return dispatch => {
     dispatch(authStart());
     axios
@@ -94,6 +96,7 @@ export const authCheckState = () => {
         dispatch(logout());
       } else {
         dispatch(authSuccess(token));
+        // dispatch(fetchCart())
         dispatch(
           checkAuthTimeout(
             (expirationDate.getTime() - new Date().getTime()) / 1000

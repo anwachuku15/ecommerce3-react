@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import BaseRouter from "./routes";
 import * as actions from "./store/actions/auth";
 import "semantic-ui-css/semantic.min.css";
-import CustomLayout from "./containers/Layout";
+import Layout from "./containers/Layout";
 
 class App extends Component {
   componentDidMount() {
@@ -14,9 +14,9 @@ class App extends Component {
   render() {
     return (
       <Router>
-        <CustomLayout {...this.props}>
+        <Layout {...this.props}>
           <BaseRouter />
-        </CustomLayout>
+        </Layout>
       </Router>
     );
   }

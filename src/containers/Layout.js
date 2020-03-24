@@ -13,21 +13,30 @@ import {
 // import axios from 'axios';
 import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { logout } from "../store/actions/auth";
+import { logout, authSuccess } from "../store/actions/auth";
 import { fetchCart } from "../store/actions/cart";
+import { authSucess } from "../store/reducers/auth";
 
-class CustomLayout extends React.Component {
+class Layout extends React.Component {
 
-  state = {}
+  state = {
+
+  }
 
   handleItemClick = (e, { name }) => this.setState({ activeItem: name })
 
   componentDidMount() {
     this.props.refreshCart();
+    console.log('cart fetched')
   }
+
+  
   
   render() {
     const { authenticated, cart, loading } = this.props;
+    
+    console.log(authenticated)
+
     const {activeItem} = this.state;
     var cartTotal = 0;
     cart && cart.order_items.map(order_item => {
@@ -37,8 +46,10 @@ class CustomLayout extends React.Component {
 
     return (
       <div>
+        {/* NAVBAR */}
         <Menu color='blue' fixed='top'>
           <Container>
+
             <Link to="/">
               <Menu.Item 
                 header
@@ -88,13 +99,13 @@ class CustomLayout extends React.Component {
                               </Dropdown.Item>
                             )
                           })}
-                          {cart && cart.order_items.length < 1 ? <Dropdown.Item>Your cart is currently empty.</Dropdown.Item> : null}
+                          {cart && cart.order_items.length < 1 ? <Dropdown.Item onClick={() => {this.props.history.push('/order-summary'); this.setState({activeItem: ''})}}>Your cart is currently empty.</Dropdown.Item> : null}
                           
                           <Dropdown.Divider />
                           <Dropdown.Item icon='arrow right' text='Checkout' onClick={() => {this.props.history.push('/order-summary'); this.setState({activeItem: ''})}}/>
                         </React.Fragment>
                       ) : (
-                        <Dropdown.Item>No items in your cart</Dropdown.Item>
+                        <Dropdown.Item onClick={() => {this.props.history.push('/order-summary'); this.setState({activeItem: ''})}}>No items in your cart</Dropdown.Item>
                       )}
                     </Dropdown.Menu>
 
@@ -125,14 +136,13 @@ class CustomLayout extends React.Component {
               )}
             </Menu.Menu>
 
-
-
           </Container>
         </Menu>
         
-        
         {this.props.children}
+        
 
+        {/* FOOTER */}
         <Segment
           inverted
           vertical
@@ -221,5 +231,5 @@ export default withRouter(
   connect(
     mapStateToProps,
     mapDispatchToProps
-  )(CustomLayout)
+  )(Layout)
 );

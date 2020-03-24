@@ -4,6 +4,7 @@ import Sale from '../icons/sale'
 import { connect } from "react-redux";
 import { Redirect } from 'react-router-dom'
 
+
 import axios from 'axios'
 import { Card, Container, Dimmer, Image, /*Item,*/ Label, Loader, Message, Segment, /*Header*/ } from 'semantic-ui-react'
 import { productListURL, addToCartURL } from '../URLconstants'
@@ -19,24 +20,22 @@ class ProductList extends React.Component {
 		order: []
 	};
 
-	// componentDidMount() gets retrieves data to be loaded on this page
+
 	componentDidMount() {
-		console.log(this.props);
-		
 		this.setState({ loading: true })
-		// Use normal Axios request because user doesn't need to be authenticated to view Product List
 		axios
 		.get(productListURL)
 		.then(res => {
-			console.log(res.data);
-			this.props.refreshCart();
 			this.setState({ data: res.data, loading: false});
 		})
 		.catch(err => {
 			this.setState({ error: err, loading: false });
 		});
-		
 	}
+
+	// componentDidUpdate() {
+	// 	console.log(this.props.isAuthenticated)
+	// }
 
 	handleAddToCart = slug => {
 		this.setState({ loading: false })
@@ -55,10 +54,10 @@ class ProductList extends React.Component {
 	render() {
 		const { data, error, loading } = this.state;
 		const isAuthenticated = this.props;
-      if (!isAuthenticated) {
-         return <Redirect to='/login' />
-      }
-		// console.log();
+
+      // if (!isAuthenticated) {
+      //    return <Redirect to='/login' />
+		// }
 		return (
 			<Container style={{ marginTop: '7em' }}>
 				{error && ( // if an error exists
@@ -87,10 +86,6 @@ class ProductList extends React.Component {
 								<Card.Content>
 								<Card.Content as='a' onClick={() => this.props.history.push(`/products/${item.id}`)}>{item.name}</Card.Content>
 									
-									{/* <Card.Meta>
-										<span className='cinema'>{item.category}</span>
-									</Card.Meta>
-									<Card.Description>{item.description}</Card.Description> */}
 									
 									<Card.Content extra>
 										{item.discount_price && (
@@ -112,6 +107,7 @@ class ProductList extends React.Component {
 														? 'green' 
 														: 'olive' 
 												}
+												onClick={() => this.props.history.push(`/products/${item.id}`)}
 											>
 												${item.price}
 											</Label>

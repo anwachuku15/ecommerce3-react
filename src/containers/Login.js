@@ -33,7 +33,7 @@ class LoginForm extends React.Component {
     const { username, password } = this.state;
 
     if (token) {
-      console.log(token)
+      console.log('TOKEN: ' + this.props.token)
       return <Redirect to="/" />;
     } else { 
       console.log('hello') 

@@ -21,7 +21,6 @@ const BaseRouter = () => (
     <Route path="/order-summary" component={OrderSummary} />
     <Route path="/checkout" component={CheckoutForm} />
     <Route exact path="/" component={ProductList} />
-    
   </Hoc>
 );
 

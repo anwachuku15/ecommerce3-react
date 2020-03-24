@@ -1,7 +1,8 @@
 import axios from 'axios';
 import {endpoint} from './URLconstants'
+import { authToken } from './store/actions/auth'
 
-// This will authorize post requests
+
 export const authAxios = axios.create({
    baseURL: endpoint,
    headers: {
