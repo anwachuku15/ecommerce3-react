@@ -1,5 +1,5 @@
 import os
-import django_heroku
+# import django_heroku
 from decouple import config
 from .secret import secretkey
 
@@ -90,4 +90,4 @@ ACCOUNT_EMAIL_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'username'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
