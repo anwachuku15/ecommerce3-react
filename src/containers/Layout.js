@@ -10,7 +10,6 @@ import {
   Menu,
   Segment,
 } from "semantic-ui-react";
-// import axios from 'axios';
 import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { logout } from "../store/actions/auth";
