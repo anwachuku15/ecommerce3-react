@@ -13,9 +13,8 @@ import {
 // import axios from 'axios';
 import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { logout, authSuccess } from "../store/actions/auth";
+import { logout } from "../store/actions/auth";
 import { fetchCart } from "../store/actions/cart";
-import { authSucess } from "../store/reducers/auth";
 
 class Layout extends React.Component {
 

@@ -2,7 +2,6 @@ import React, { Fragment } from 'react'
 import Sale from '../icons/sale'
 // React-Redux connects actions to the component
 import { connect } from "react-redux";
-import { Redirect } from 'react-router-dom'
 
 
 import axios from 'axios'
@@ -53,7 +52,7 @@ class ProductList extends React.Component {
 
 	render() {
 		const { data, error, loading } = this.state;
-		const isAuthenticated = this.props;
+		// const isAuthenticated = this.props;
 
       // if (!isAuthenticated) {
       //    return <Redirect to='/login' />
