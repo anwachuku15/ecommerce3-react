@@ -6,7 +6,7 @@ const apiURL = '/api';
 // export const endpoint = `${localhost}${apiURL}`;
 
 // prod
-const heroku = 'https://ecommerce3-nwachuku.herokuapp.com/';
+const heroku = 'https://ecommerce3-nwachuku.herokuapp.com';
 export const endpoint = `${heroku}${apiURL}`;
 
 
