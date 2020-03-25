@@ -1,8 +1,15 @@
 // define all API data to be queried
 
-const localhost = 'http://localhost:8000';
+// dev
+// const localhost = 'http://localhost:8000';
+// export const endpoint = `${localhost}${apiURL}`;
+
+// prod
+const heroku = 'https://ecommerce3-nwachuku.herokuapp.com/';
+export const endpoint = `${heroku}${apiURL}`;
+
 const apiURL = '/api';
-export const endpoint = `${localhost}${apiURL}`;
+
 
 export const userIDURL = `${endpoint}/user-id/`;
 export const countryListURL = `${endpoint}/countries/`;
