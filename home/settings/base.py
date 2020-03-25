@@ -1,9 +1,11 @@
 import os
+import django_heroku
 from decouple import config
+from .secret import secretkey
 
 BASE_DIR = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))))
-SECRET_KEY = '-05sgp9!deq=q1nltm@^^2cc+v29i(tyybv3v2t77qi66czazj'
+SECRET_KEY = secretkey
 DEBUG = False
 # ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = ['ecommerce3-nwachuku.herokuapp.com', 'localhost']
@@ -87,3 +89,5 @@ REST_FRAMEWORK = {
 ACCOUNT_EMAIL_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'username'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+django_heroku.settings(locals())
