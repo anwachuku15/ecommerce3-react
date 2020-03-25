@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux'
-// import { Redirect } from 'react-router-dom'
 import { Button, Card, /*Dimmer,*/ Divider, Form, Grid, Header, Icon, /*Image,*/ Label, /*Loader,*/ Menu, Message, /*Segment,*/ Table } from 'semantic-ui-react'
 import { addressListURL, addressCreateURL, addressUpdateURL, addressMakeDefaultURL, addressRemoveDefaultURL, addressDeleteURL, countryListURL, userIDURL, paymentListURL } from '../URLconstants'
 import {authAxios} from '../utils'
