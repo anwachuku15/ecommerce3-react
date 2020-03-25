@@ -7,4 +7,3 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "home.settings.prod")
 
 application = get_wsgi_application()
 application = DjangoWhiteNoise(application)
-

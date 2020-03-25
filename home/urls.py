@@ -10,6 +10,7 @@ urlpatterns = [
     path('rest-auth/registration/', include('rest_auth.registration.urls')),
     path('admin/', admin.site.urls),
     path('api/', include('core.api.urls')),
+    re_path('.*', TemplateView.as_view(template_name='index.html'))
 ]
 
 if settings.DEBUG:
