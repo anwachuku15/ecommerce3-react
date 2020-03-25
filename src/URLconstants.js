@@ -1,5 +1,6 @@
 // define all API data to be queried
 const apiURL = '/api';
+
 // dev
 // const localhost = 'http://localhost:8000';
 // export const endpoint = `${localhost}${apiURL}`;
